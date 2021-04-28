@@ -15,3 +15,7 @@ path = "src/main_2_4_1.rs"
 [[bin]]
 name = "main_2_4_2"
 path = "src/main_2_4_2.rs"
+
+[[bin]]
+name = "client_2_4_4"
+path = "src/2_4_4/client.rs"
