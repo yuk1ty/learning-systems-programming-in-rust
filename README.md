@@ -1,3 +1,3 @@
 # learning-systems-programming-in-rust
 
-「Rust ならわかるシステムプログラミング」
+『Go ならわかるシステムプログラミング』を Rust で書き直すプロジェクト、その名も「Rust ならわかるシステムプログラミング」。
