@@ -9,5 +9,9 @@ edition = "2018"
 [dependencies]
 
 [[bin]]
-name = "oswriter"
+name = "main_2_4_1"
 path = "src/main_2_4_1.rs"
+
+[[bin]]
+name = "main_2_4_2"
+path = "src/main_2_4_2.rs"
