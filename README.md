@@ -14,10 +14,10 @@
 
 ### 各コードの実行方法
 
-`cargo workspace` 等の機能を使用しているので、実行には `cargo run` 以外にさらにいくつかオプションをつける必要があります。たとえば `chapter2` の `main_2_4_1.rs` を実行したい場合には、下記のように `cargo` コマンドを打つと実行できます。
+`cargo workspace` 等の機能を使用しているので、実行には `cargo run` 以外にさらにいくつかオプションをつける必要があります。たとえば `chapter2` の `2_4_1/main.rs` を実行したい場合には、下記のように `cargo` コマンドを打つと実行できます。
 
 ```bash
-cargo run -p chapter2 --bin main_2_4_1
+cargo run -p chapter2 --bin 2_4_1
 ```
 
 ### Rust バージョン
