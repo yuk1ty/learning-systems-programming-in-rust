@@ -12,6 +12,18 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  lint:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: cargo fmt
+      uses: actions-rs/cargo@v1
+      with:
+        command: fmt
+        args: --all
+
   build:
 
     runs-on: ubuntu-latest
