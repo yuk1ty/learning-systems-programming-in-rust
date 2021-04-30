@@ -1,5 +1,5 @@
-use std::net::{TcpStream, TcpListener};
-use std::io::{Write, BufReader, BufRead};
+use std::io::{BufRead, BufReader, Write};
+use std::net::{TcpListener, TcpStream};
 
 fn get_operation(stream: &mut TcpStream) -> std::io::Result<()> {
     let body = "HTTP server sample";
