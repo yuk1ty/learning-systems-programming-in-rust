@@ -18,6 +18,13 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
+    - name: Install rust-toolchain with rustfmt
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        components: rustfmt
+
     - name: cargo fmt
       uses: actions-rs/cargo@v1
       with:
