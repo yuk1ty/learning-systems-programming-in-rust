@@ -6,4 +6,21 @@ edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[[bin]]
+name = "3_4_1"
+path = "src/3_4_1/main.rs"
+
+[[bin]]
+name = "3_4_2"
+path = "src/3_4_2/main.rs"
+
+[[bin]]
+name = "3_4_3"
+path = "src/3_4_3/main.rs"
+
+[[bin]]
+name = "3_4_4"
+path = "src/3_4_4/main.rs"
+
 [dependencies]
+httparse = "1.3.5"
