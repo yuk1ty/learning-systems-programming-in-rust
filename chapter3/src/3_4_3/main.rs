@@ -54,5 +54,5 @@ fn main() {
 
     println!("{:?}", res.headers);
 
-    std::io::copy(&mut res.body, &mut stdout());
+    std::io::copy(&mut res.body, &mut stdout()).unwrap();
 }
