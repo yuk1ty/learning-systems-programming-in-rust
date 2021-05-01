@@ -4,10 +4,7 @@
  * io.copy with size
  * 
  */
-use std::io::copy;
-use std::io::Read;
-use std::io::Write;
-use std::io::Result;
+use std::io::{copy,Read,Write,Result};
 
 pub fn main() -> std::io::Result<()>{
     let mut reader : &[u8] = b"hello!";
