@@ -8,7 +8,7 @@
 use std::io::Read;
 
 pub fn main() -> std::io::Result<()>{
-    let mut r : &[u8] = &b"abcdefg".repeat(5);
+    let mut r : &[u8] = &b"abcdefg".repeat(5);//make data
     let mut buffer : Vec<u8>= vec!();
     let size = match r.read_to_end(&mut buffer){
         Ok(size) => size,
