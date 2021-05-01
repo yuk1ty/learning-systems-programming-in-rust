@@ -10,7 +10,7 @@ fn prime_number() -> mpsc::Receiver<u64> {
             let l = (i as f64).sqrt() as u64;
             let found = (3..=l).step_by(2).into_iter().any(|j| i % j == 0);
             if !found {
-                tx.send(i).await;
+                tx.send(i).await.unwrap();
             }
         }
         tx.closed().await; // rustではDropで利用されてるからいらないけど一応
