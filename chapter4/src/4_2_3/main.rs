@@ -13,7 +13,6 @@ fn prime_number() -> mpsc::Receiver<u64> {
                 tx.send(i).await.unwrap();
             }
         }
-        tx.closed().await; // rustではDropで利用されてるからいらないけど一応
     });
 
     rx
