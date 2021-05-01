@@ -47,9 +47,9 @@ impl<R: Read + BufRead> ReadResponse<R> {
 
 
 fn main() {
-    let mut conn = TcpStream::connect("ascii.jp:80").unwrap();
+    let mut conn = TcpStream::connect("example.com:80").unwrap();
 
-    conn.write("GET / HTTP/1.0\r\nHost: ascii.jp\r\n\r\n".as_bytes()).unwrap();
+    conn.write("GET / HTTP/1.0\r\nHost: example.com\r\n\r\n".as_bytes()).unwrap();
     let mut buf_reader = BufReader::new(conn);
     let mut res = ReadResponse::new(&mut buf_reader).unwrap();
 
