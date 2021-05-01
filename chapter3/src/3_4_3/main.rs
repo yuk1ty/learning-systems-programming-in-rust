@@ -1,3 +1,4 @@
+use anyhow::Result;
 use httparse::{parse_headers, Error, Header, Response, Status, EMPTY_HEADER};
 use std::fmt::{Display, Formatter};
 use std::io::{stdin, stdout, BufRead, BufReader, Bytes, Read, Write};
@@ -15,16 +16,16 @@ struct ReadResponse<R: Read + BufRead> {
 }
 
 impl<R: Read + BufRead> ReadResponse<R> {
-    fn new(mut reader: R) -> Result<Self, Error> {
+    fn new(mut reader: R) -> Result<Self> {
         let mut buf = vec![];
         let headers = loop {
             let mut line = String::new();
-            reader.read_line(&mut line).unwrap();
+            reader.read_line(&mut line)?;
             buf.extend_from_slice(&line.as_bytes());
 
             let mut headers = [EMPTY_HEADER; 30];
             let mut resp = Response::new(&mut headers);
-            let status = resp.parse(&buf).unwrap();
+            let status = resp.parse(&buf)?;
             if status.is_complete() {
                 break resp
                     .headers
