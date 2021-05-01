@@ -1,4 +1,4 @@
-use std::io::{stdin, Read, Error, ErrorKind};
+use std::io::{stdin, Error, ErrorKind, Read};
 
 fn main() {
     loop {
@@ -10,14 +10,17 @@ fn main() {
                 break;
             }
             Ok(size) => {
-                println!("size={} input'{}'", size, std::str::from_utf8(&buffer).unwrap());  // rustはStringがUTF-8だから若干違うのはしょうがない？
+                println!(
+                    "size={} input'{}'",
+                    size,
+                    std::str::from_utf8(&buffer).unwrap()
+                ); // rustはStringがUTF-8だから若干違うのはしょうがない？
             }
             Err(e) => {
                 if e.kind() == ErrorKind::UnexpectedEof {
                     println!("EOF");
                     break;
-                }
-                else {
+                } else {
                     unreachable!();
                 }
             }
