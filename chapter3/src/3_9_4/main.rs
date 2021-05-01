@@ -14,7 +14,7 @@ fn handle_client(mut stream: TcpStream) -> io::Result<()> {
     writeln!(stream, "Content-Length: {}", content.len())?;
     writeln!(stream)?;
 
-    stream.write(&content)?;
+    stream.write_all(&content)?;
 
     Ok(())
 }
@@ -23,7 +23,7 @@ fn create_zip_file() -> io::Result<()> {
     let file = File::create(ZIP_FILE_NAME)?;
     let mut zip = zip::ZipWriter::new(file);
     zip.start_file("file.txt", zip::write::FileOptions::default())?;
-    zip.write(b"zipzipzipzipzipzipzipzipzipzipzipzipzipzipzipzip")?;
+    zip.write_all(b"zipzipzipzipzipzipzipzipzipzipzipzipzipzipzipzip")?;
 
     Ok(())
 }

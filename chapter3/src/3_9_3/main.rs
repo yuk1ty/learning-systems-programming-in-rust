@@ -7,7 +7,7 @@ fn main() -> io::Result<()> {
 
     let mut zip = zip::ZipWriter::new(file);
     zip.start_file("file.txt", zip::write::FileOptions::default())?;
-    zip.write(b"zipzipzipzipzipzipzipzipzipzipzipzipzipzipzipzip")?;
+    zip.write_all(b"zipzipzipzipzipzipzipzipzipzipzipzipzipzipzipzip")?;
 
     Ok(())
 }

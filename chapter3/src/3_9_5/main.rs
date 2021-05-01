@@ -14,7 +14,7 @@ where
     let mut buffer = vec![0; n];
     reader.read_exact(&mut buffer)?;
 
-    writer.write(&buffer)?;
+    writer.write_all(&buffer)?;
 
     Ok(0)
 }
