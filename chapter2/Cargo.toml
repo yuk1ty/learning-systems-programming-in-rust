@@ -1,21 +1,29 @@
 [package]
-name = "chapter2"
-version = "0.1.0"
 authors = ["yytyd <toyoda_yuki@cyberagent.co.jp>"]
 edition = "2018"
+name = "chapter2"
+version = "0.1.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 
 [[bin]]
-name = "main_2_4_1"
-path = "src/main_2_4_1.rs"
+name = "2_4_1"
+path = "src/2_4_1/main.rs"
 
 [[bin]]
-name = "main_2_4_2"
-path = "src/main_2_4_2.rs"
+name = "2_4_2"
+path = "src/2_4_2/main.rs"
+
+[[bin]]
+name = "2_4_3"
+path = "src/2_4_3/main.rs"
 
 [[bin]]
 name = "client_2_4_4"
 path = "src/2_4_4/client.rs"
+
+[[bin]]
+name = "server_2_4_4"
+path = "src/2_4_4/server.rs"

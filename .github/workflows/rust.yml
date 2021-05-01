@@ -4,12 +4,33 @@ on:
   push:
     branches: [ master ]
   pull_request:
-    branches: [ master ]
+    types:
+      - opened
+      - synchronize
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
+  lint:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install rust-toolchain with rustfmt
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        components: rustfmt
+
+    - name: cargo fmt
+      uses: actions-rs/cargo@v1
+      with:
+        command: fmt
+        args: --all -- --check
+
   build:
 
     runs-on: ubuntu-latest
