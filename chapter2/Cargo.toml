@@ -19,3 +19,7 @@ path = "src/2_4_2/main.rs"
 [[bin]]
 name = "client_2_4_4"
 path = "src/2_4_4/client.rs"
+
+[[bin]]
+name = "server_2_4_4"
+path = "src/2_4_4/server.rs"
