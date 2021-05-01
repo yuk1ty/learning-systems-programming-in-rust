@@ -6,15 +6,14 @@
  */
 
 use std::io::Read;
-use std::fs::File;
 
 pub fn main() -> std::io::Result<()>{
-    let mut r = File::open("./chapter3/content/foo")?;
+    let mut r : &[u8] = &b"abcdefg".repeat(5);
     let mut buffer : Vec<u8>= vec!();
     let size = match r.read_to_end(&mut buffer){
         Ok(size) => size,
         Err(err) => {return Err(err.into());}
     };
-    // println!("{:?}",&buffer[..size]); 
+    println!("{:?}",&buffer[..size]); 
     Ok(())
  }
