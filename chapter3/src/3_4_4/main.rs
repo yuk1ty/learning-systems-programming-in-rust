@@ -26,6 +26,7 @@ impl Seek for StringReader {
 
 type BytesReader = Cursor<Vec<u8>>;
 
+#[allow(unused_variables)]
 fn main() {
     // BufferはRustではVec<u8>とStringが兼ねていると思っています。
 

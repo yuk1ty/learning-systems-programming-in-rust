@@ -1,4 +1,4 @@
-use std::io::{stdin, Error, ErrorKind, Read};
+use std::io::{stdin, Read};
 
 fn main() {
     loop {

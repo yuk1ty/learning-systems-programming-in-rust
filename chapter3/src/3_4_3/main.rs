@@ -1,7 +1,6 @@
 use anyhow::Result;
-use httparse::{parse_headers, Error, Header, Response, Status, EMPTY_HEADER};
-use std::fmt::{Display, Formatter};
-use std::io::{stdin, stdout, BufRead, BufReader, Bytes, Read, Write};
+use httparse::{Response, EMPTY_HEADER};
+use std::io::{stdout, BufRead, BufReader, Read, Write};
 use std::net::TcpStream;
 
 #[derive(Debug)]
