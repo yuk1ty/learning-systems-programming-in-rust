@@ -14,5 +14,9 @@ path = "src/4_2_1/main.rs"
 name = "4_2_3"
 path = "src/4_2_3/main.rs"
 
+[[bin]]
+name = "4_2_4"
+path = "src/4_2_4/main.rs"
+
 [dependencies]
 tokio = { version = "1.5.0", features = ["full"] }
