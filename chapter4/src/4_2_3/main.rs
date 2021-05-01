@@ -1,6 +1,5 @@
 use tokio;
 use tokio::sync::mpsc;
-use tokio::time::{sleep, Duration};
 
 fn prime_number() -> mpsc::Receiver<u64> {
     let (tx, mut rx) = mpsc::channel(100);
