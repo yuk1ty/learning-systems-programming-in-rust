@@ -6,4 +6,13 @@ edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[[bin]]
+name = "4_2_1"
+path = "src/4_2_1/main.rs"
+
+[[bin]]
+name = "4_2_3"
+path = "src/4_2_3/main.rs"
+
 [dependencies]
+tokio = { version = "1.5.0", features = ["full"] }
