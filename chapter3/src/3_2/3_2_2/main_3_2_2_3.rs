@@ -40,5 +40,6 @@ where
             }
         }
     }
+    writer.flush()?;
     Ok(written)
 }
