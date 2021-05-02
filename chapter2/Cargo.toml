@@ -7,6 +7,7 @@ version = "0.1.0"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+flate2 = "1.0"
 
 [[bin]]
 name = "2_4_1"
@@ -27,3 +28,7 @@ path = "src/2_4_4/client.rs"
 [[bin]]
 name = "server_2_4_4"
 path = "src/2_4_4/server.rs"
+
+[[bin]]
+name = "2_8_3"
+path = "src/2_8_3/main.rs"
