@@ -14,7 +14,7 @@ pub fn main() -> std::io::Result<()> {
         Err(err) => {
             panic!("ERROR => {}", err)
         }
-    }; //buffer.len() < r => ERROR
+    }; //buffer.len() < r -> ERROR
     println!("{:?}", &buffer[..4]);
     Ok(())
 }
