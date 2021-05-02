@@ -1,7 +1,7 @@
 /**
  *
  * chapter 3_2_2_3
- * io.copy with size
+ * copy with buffer
  *
  */
 use std::io::{Read, Result, Write};
