@@ -12,7 +12,7 @@ pub fn main() -> std::io::Result<()> {
     let size = match r.read_to_end(&mut buffer) {
         Ok(size) => size,
         Err(err) => {
-            return Err(err.into());
+            panic!("ERROR => {}", err)
         }
     };
     println!("{:?}", &buffer[..size]);
