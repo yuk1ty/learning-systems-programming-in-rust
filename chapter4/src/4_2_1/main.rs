@@ -4,13 +4,16 @@ use tokio;
 async fn main() {
     println!("start sub()");
 
-    // 終了を受け取るためのfeature(チャンネルに変えたほうが良い？)
-    let done = async move {
+    // 終了を受け取るためのchannel
+    let (done_tx, mut done_rx) = tokio::sync::mpsc::channel(1);
+
+    tokio::spawn(async move {
         println!("sub() is finished");
-        true
-    };
+        done_tx.send(true);
+    });
+
     // 終了を待つ
-    let _done = done.await;
+    let _done = done_rx.recv().await;
 
     println!("all tasks are finished");
 }
