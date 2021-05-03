@@ -10,12 +10,7 @@ pub fn main() -> std::io::Result<()> {
     let mut read: &[u8] = &b"abcdefg".repeat(500 * 1024); //358.4KB Source
     let mut dst: Vec<u8> = vec![];
     let mut buffer: Box<[u8]> = Box::new([0; 8 * 1024]); //8KB Buffer
-    let result = match copy_buffer(&mut read, &mut dst, &mut buffer) {
-        Ok(result) => result,
-        Err(err) => {
-            panic!("ERROR => {}", err)
-        }
-    };
+    let result = copy_buffer(&mut read, &mut dst, &mut buffer)?;
     println!("{} bytes written.", result);
     Ok(())
 }

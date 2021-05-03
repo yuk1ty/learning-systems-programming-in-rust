@@ -9,12 +9,7 @@ use std::io::copy;
 pub fn main() -> std::io::Result<()> {
     let mut reader: &[u8] = b"hello!";
     let mut buffer: Vec<u8> = vec![];
-    match copy(&mut reader, &mut buffer) {
-        Ok(result) => result,
-        Err(err) => {
-            panic!("ERROR => {}", err)
-        }
-    };
+    copy(&mut reader, &mut buffer)?;
     println!("{:?}", &buffer[..]);
     Ok(())
 }
