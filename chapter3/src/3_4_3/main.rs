@@ -22,7 +22,7 @@ impl<R: Read + BufRead> ReadResponse<R> {
             reader.read_line(&mut line)?;
             buf.extend_from_slice(&line.as_bytes());
 
-            let mut headers = [EMPTY_HEADER; 30];
+            let mut headers = [EMPTY_HEADER; 30]; // 30くらいで十分という前提のマジックナンバー
             let mut resp = Response::new(&mut headers);
             let status = resp.parse(&buf)?;
             if status.is_complete() {
