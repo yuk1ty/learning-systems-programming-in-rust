@@ -3,42 +3,72 @@
 [[package]]
 name = "appendix"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter1"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter10"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter11"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter12"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter13"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter14"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter15"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter16"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter17"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter2"
@@ -61,22 +91,37 @@ version = "0.1.0"
 [[package]]
 name = "chapter5"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter6"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter7"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter8"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter9"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "lib"
