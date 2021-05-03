@@ -14,6 +14,6 @@ fn main() {
             "size={} input'{}'",
             size,
             std::str::from_utf8(&buffer).unwrap()
-        ); // rustはStringがUTF-8だから若干違うのはしょうがない？
+        ); // rustはStringがUTF-8だからgoのstringと若干違う可能性がある
     }
 }

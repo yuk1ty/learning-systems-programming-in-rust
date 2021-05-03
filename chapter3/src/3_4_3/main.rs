@@ -29,10 +29,12 @@ impl<R: Read + BufRead> ReadResponse<R> {
                 break resp
                     .headers
                     .iter()
-                    .map(|h| Ok(HeaderOwn {
-                        name: h.name.to_string(),
-                        value: String::from_utf8(h.value.to_vec())?,
-                    }))
+                    .map(|h| {
+                        Ok(HeaderOwn {
+                            name: h.name.to_string(),
+                            value: String::from_utf8(h.value.to_vec())?,
+                        })
+                    })
                     .collect::<Result<_>>()?;
             }
         };
