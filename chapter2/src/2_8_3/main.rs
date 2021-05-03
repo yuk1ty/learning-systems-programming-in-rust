@@ -1,12 +1,9 @@
-mod multi_writer;
-
 use flate2::{write::GzEncoder, Compression};
+use lib::io::MultiWriter;
 use std::{
     io::{self, Read, Write},
     net::{TcpListener, TcpStream},
 };
-
-use crate::multi_writer::MultiWriter;
 
 fn handle_tcp_request(mut stream: TcpStream) -> io::Result<()> {
     let req = read_request_line(&mut stream)?;
