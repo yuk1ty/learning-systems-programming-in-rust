@@ -9,6 +9,9 @@ checksum = "f26201604c87b1e01bd3d98f8d5d9a8fcbb815e8cedb41ffccbeb4bf593a35fe"
 [[package]]
 name = "appendix"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "autocfg"
@@ -25,49 +28,80 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 [[package]]
 name = "chapter1"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter10"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter11"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter12"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter13"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter14"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter15"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter16"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter17"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter2"
 version = "0.1.0"
 dependencies = [
  "flate2",
+ "lib",
 ]
 
 [[package]]
 name = "chapter3"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter4"
@@ -76,22 +110,37 @@ version = "0.1.0"
 [[package]]
 name = "chapter5"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter6"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter7"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter8"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter9"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "crc32fast"
@@ -113,6 +162,10 @@ dependencies = [
  "libc",
  "miniz_oxide",
 ]
+
+[[package]]
+name = "lib"
+version = "0.1.0"
 
 [[package]]
 name = "libc"
