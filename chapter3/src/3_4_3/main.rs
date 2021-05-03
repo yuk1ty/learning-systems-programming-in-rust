@@ -6,7 +6,7 @@ use std::net::TcpStream;
 #[derive(Debug)]
 struct HeaderOwn {
     name: String,
-    body: Vec<u8>,
+    value: String,
 }
 
 struct ReadResponse<R: Read + BufRead> {
@@ -29,11 +29,11 @@ impl<R: Read + BufRead> ReadResponse<R> {
                 break resp
                     .headers
                     .iter()
-                    .map(|h| HeaderOwn {
+                    .map(|h| Ok(HeaderOwn {
                         name: h.name.to_string(),
-                        body: h.value.to_vec(),
-                    })
-                    .collect();
+                        value: String::from_utf8(h.value.to_vec())?,
+                    }))
+                    .collect::<Result<_>>()?;
             }
         };
 
