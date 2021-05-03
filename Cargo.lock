@@ -43,10 +43,16 @@ version = "0.1.0"
 [[package]]
 name = "chapter2"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter3"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "chapter4"
