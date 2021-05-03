@@ -4,6 +4,13 @@
 /// - [text_io](https://github.com/oli-obk/rust-si): scan マクロが存在する。
 /// - [scan_fmt](https://github.com/wlentz/scan_fmt): 同様に scan_fmt マクロが存在する。
 
+/// scan! マクロ。
+/// scan!("<入れた文字>", セパレータの設定, 型情報*) と値を入れていくと、scanf とほぼ同等の動きをする。
+///
+/// Example:
+/// ```rust
+/// scan!("123 text", char::is_whitespacce, i32, String);
+/// ```
 macro_rules! scan {
     ( $string:expr, $sep:expr, $( $x:ty ),+ ) => {{
         let mut iter = $string.split($sep);
