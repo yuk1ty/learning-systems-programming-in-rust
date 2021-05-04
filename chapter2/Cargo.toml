@@ -8,6 +8,7 @@ version = "0.1.0"
 
 [dependencies]
 lib = { path = "../lib" }
+flate2 = "1.0"
 
 [[bin]]
 name = "2_4_1"
@@ -28,6 +29,10 @@ path = "src/2_4_4/client.rs"
 [[bin]]
 name = "server_2_4_4"
 path = "src/2_4_4/server.rs"
+
+[[bin]]
+name = "2_4_5"
+path = "src/2_4_5/main.rs"
 
 [[bin]]
 name = "2_8_1"

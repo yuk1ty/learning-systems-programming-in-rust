@@ -125,6 +125,7 @@ dependencies = [
 name = "chapter2"
 version = "0.1.0"
 dependencies = [
+ "flate2",
  "lib",
 ]
 
