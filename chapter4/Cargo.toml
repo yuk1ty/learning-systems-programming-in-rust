@@ -7,3 +7,9 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+lib = { path = "../lib" }
+signal-hook = "0.3"
+
+[[bin]]
+name = "4_3_1"
+path = "src/4_3_1/main.rs"
