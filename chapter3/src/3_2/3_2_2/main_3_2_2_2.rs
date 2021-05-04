@@ -9,7 +9,7 @@ use std::io::{copy, Read, Result, Write};
 pub fn main() -> std::io::Result<()> {
     let mut reader: &[u8] = b"hello!";
     let mut buffer: Vec<u8> = vec![];
-    copy_n(&mut reader, &mut buffer, 3)?; 
+    copy_n(&mut reader, &mut buffer, 3)?;
     println!("{:?}", &buffer[..]);
     Ok(())
 }
