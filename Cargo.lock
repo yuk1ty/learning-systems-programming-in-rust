@@ -127,16 +127,15 @@ dependencies = [
 [[package]]
 name = "chapter9"
 version = "0.1.0"
+dependencies = [
+ "lib",
+]
 
 [[package]]
 name = "httparse"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4a1ce40d6fc9764887c2fdc7305c3dcc429ba11ff981c1509416afd5697e4437"
-
-dependencies = [
- "lib",
-]
 
 [[package]]
 name = "lib"
