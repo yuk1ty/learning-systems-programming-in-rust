@@ -6,10 +6,10 @@ struct WithCancel {
 }
 
 impl WithCancel {
-    pub fn new() -> (Self, oneshot::Sender<()>) {
+    pub fn new() -> (Self, Canceler) {
         let (tx, rx) = oneshot::channel();
 
-        (Self { cancel_rx: rx }, tx)
+        (Self { cancel_rx: rx }, Canceler(tx))
     }
 
     pub async fn done(self) -> Result<(), oneshot::error::RecvError> {
@@ -17,15 +17,23 @@ impl WithCancel {
     }
 }
 
+struct Canceler(oneshot::Sender<()>);
+
+impl Canceler {
+    fn cancel(self) -> Result<(), ()> {
+        self.0.send(())
+    }
+}
+
 #[tokio::main]
 async fn main() {
     println!("start sub()");
 
-    let (ctx, cancel) = WithCancel::new(); // context.Background()に関してあまり理解できていない
+    let (ctx, canceler) = WithCancel::new(); // context.Background()に関してあまり理解できていない
 
     tokio::spawn(async move {
         println!("sub() is finished");
-        cancel.send(()).unwrap();
+        canceler.cancel().unwrap();
     });
 
     ctx.done().await.unwrap();
