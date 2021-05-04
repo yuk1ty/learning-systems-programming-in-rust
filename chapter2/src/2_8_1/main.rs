@@ -34,6 +34,8 @@ fn write_fmt<W: fmt::Write>(w: &mut W) {
 }
 
 fn main() -> io::Result<()> {
+    let x = 42;
+
     let tmp_path = mktemp();
     {
         let mut contents = String::new();
