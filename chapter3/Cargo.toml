@@ -29,3 +29,6 @@ path = "src/3_9_4/main.rs"
 [[bin]]
 name = "3_9_5"
 path = "src/3_9_5/main.rs"
+[[bin]]
+name = "3_6_1"
+path = "src/3_6_1/main.rs"
