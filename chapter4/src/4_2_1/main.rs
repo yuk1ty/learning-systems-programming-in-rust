@@ -13,7 +13,7 @@ async fn main() {
     });
 
     // 終了を待つ
-    let _done = done_rx.recv().await;
+    let _done = done_rx.recv().await.unwrap();
 
     println!("all tasks are finished");
 }

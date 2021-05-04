@@ -10,15 +10,15 @@ async fn multi_channel(
     for i in 0..10 {
         if i % 2 == 0 {
             println!("ch1へ送信");
-            chint.send(i).await;
+            chint.send(i).await.unwrap();
         } else {
             println!("ch2へ送信");
-            chstr.send(format!("test{}", i)).await;
+            chstr.send(format!("test{}", i)).await.unwrap();
         }
 
         sleep(Duration::from_secs(1)).await;
     }
-    end.send(());
+    end.send(()).unwrap();
 }
 
 #[tokio::main]

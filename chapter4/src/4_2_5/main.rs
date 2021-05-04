@@ -25,7 +25,7 @@ async fn main() {
 
     tokio::spawn(async move {
         println!("sub() is finished");
-        cancel.send(());
+        cancel.send(()).unwrap();
     });
 
     ctx.done().await.unwrap();
