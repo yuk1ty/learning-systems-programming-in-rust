@@ -8,6 +8,8 @@ edition = "2018"
 
 
 [dependencies]
+rand = "0.8.3"
+zip = "0.5.12"
 lib = { path = "../lib" }
 httparse = "1.3.5"
 anyhow = "1.0.40"
@@ -15,19 +17,33 @@ anyhow = "1.0.40"
 [[bin]]
 name = "main_3_1"
 path = "src/3_1/main.rs"
-
 [[bin]]
 name = "3_4_1"
 path = "src/3_4_1/main.rs"
-
 [[bin]]
 name = "3_4_2"
 path = "src/3_4_2/main.rs"
-
 [[bin]]
 name = "3_4_3"
 path = "src/3_4_3/main.rs"
-
 [[bin]]
 name = "3_4_4"
 path = "src/3_4_4/main.rs"
+[[bin]]
+name = "3_9_1"
+path = "src/3_9_1/main.rs"
+[[bin]]
+name = "3_9_2"
+path = "src/3_9_2/main.rs"
+[[bin]]
+name = "3_9_3"
+path = "src/3_9_3/main.rs"
+[[bin]]
+name = "3_9_4"
+path = "src/3_9_4/main.rs"
+[[bin]]
+name = "3_9_5"
+path = "src/3_9_5/main.rs"
+[[bin]]
+name = "3_6_1"
+path = "src/3_6_1/main.rs"

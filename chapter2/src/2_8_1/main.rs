@@ -1,28 +1,12 @@
 //! Write format string to a file using `write!` macro (Go version uses `Fprintf`).
 
 use std::{
-    env::temp_dir,
     fmt,
     fs::File,
     io::{self, Read, Write},
-    path::PathBuf,
-    time::{SystemTime, UNIX_EPOCH},
 };
 
-fn mktemp() -> PathBuf {
-    let mut tempdir = temp_dir();
-
-    let tempfile = {
-        let now = SystemTime::now();
-        let unixtime = now
-            .duration_since(UNIX_EPOCH)
-            .expect("system clock maybe corrupt");
-        format!("{}-{:09}", unixtime.as_secs(), unixtime.subsec_nanos())
-    };
-
-    tempdir.push(tempfile);
-    tempdir
-}
+use lib::env::temp_file;
 
 fn write_fmt<W: fmt::Write>(w: &mut W) {
     write!(
@@ -34,7 +18,7 @@ fn write_fmt<W: fmt::Write>(w: &mut W) {
 }
 
 fn main() -> io::Result<()> {
-    let tmp_path = mktemp();
+    let tmp_path = temp_file();
     {
         let mut contents = String::new();
         write_fmt(&mut contents);
