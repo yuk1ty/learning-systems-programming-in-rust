@@ -9,7 +9,7 @@ async fn main() {
 
     tokio::spawn(async move {
         println!("sub() is finished");
-        done_tx.send(true);
+        done_tx.send(true).await.unwrap();
     });
 
     // 終了を待つ
