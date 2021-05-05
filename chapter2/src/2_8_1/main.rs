@@ -9,9 +9,10 @@ use std::{
 use lib::env::temp_file;
 
 fn write_fmt<W: fmt::Write>(w: &mut W) {
-    write!(
+    #[allow(clippy::write_literal)]
+    writeln!(
         w,
-        "{{}}(\"10\"): {}, {{}}(10): {}, {{:.1}}(10.0): {:.1}\n",
+        "{{}}(\"10\"): {}, {{}}(10): {}, {{:.1}}(10.0): {:.1}",
         "10", 10, 10.0
     )
     .expect("wrong format string")
@@ -23,7 +24,7 @@ fn main() -> io::Result<()> {
         let mut contents = String::new();
         write_fmt(&mut contents);
         let mut f = File::create(&tmp_path)?;
-        f.write(contents.as_bytes())?;
+        f.write_all(contents.as_bytes())?;
     }
     let written_contents = {
         let mut f = File::open(&tmp_path)?;
