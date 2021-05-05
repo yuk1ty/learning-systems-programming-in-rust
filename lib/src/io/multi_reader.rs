@@ -1,11 +1,34 @@
 use std::io::Read;
 
+/// Takes multiple `std::io::Read` at once.
+/// This is inspired by `io.MultiReader` in Go.
+///
+/// # Example
+///
+/// ```
+/// use std::{
+///     io::{copy, stdout, Read},
+///     usize,
+/// };
+/// use lib::io::MultiReader;
+///
+/// fn main() -> std::io::Result<()> {
+///     let header = "---- HEADER ----\n".as_bytes();
+///     let content = "Example of MultiReader\n".as_bytes();
+///     let footer = "---- FOOTER ----\n".as_bytes();
+///     let mut multi_reader = MultiReader::new(vec![header, content, footer]);
+///     copy(&mut multi_reader, &mut stdout())?;
+///     Ok(())
+/// }
+/// ```
 pub struct MultiReader<R> {
     readers: Vec<R>,
+    /// Points to where we read right now.
     pos: usize,
 }
 
 impl<R: Read> MultiReader<R> {
+    /// Creates `MultiReader`. `pos` is set to 0 by default.
     pub fn new(readers: Vec<R>) -> Self {
         Self { readers, pos: 0 }
     }
