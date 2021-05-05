@@ -9,6 +9,7 @@ use std::{
 use lib::env::temp_file;
 
 fn write_fmt<W: fmt::Write>(w: &mut W) {
+    #[allow(clippy::write_literal)]
     writeln!(
         w,
         "{{}}(\"10\"): {}, {{}}(10): {}, {{:.1}}(10.0): {:.1}",
