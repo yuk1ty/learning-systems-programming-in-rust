@@ -10,6 +10,8 @@ use std::{
 /// # Examples
 ///
 /// ```
+/// use lib::env::temp_file;
+///
 /// let file = temp_file();
 /// println!("Temporary file: {}", file.display());
 /// ```
