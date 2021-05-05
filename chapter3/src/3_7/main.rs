@@ -1,19 +1,35 @@
-use std::io::{Read, Write};
+//! Rust には MultiReader と TeeReader は存在しないため、それらを自前で実装して用意しています。
 
-struct MultiReader(Vec<Box<dyn Read>>);
+use std::{
+    io::{copy, stdout, Read, Write},
+    usize,
+};
 
-impl MultiReader {
-    pub fn new(readers: Vec<Box<dyn Read>>) -> Self {
-        Self(readers)
+pub struct MultiReader<R> {
+    readers: Vec<R>,
+    pos: usize,
+}
+
+impl<R: Read> MultiReader<R> {
+    fn new(readers: Vec<R>) -> Self {
+        Self { readers, pos: 0 }
     }
 }
 
-impl Read for MultiReader {
+impl<R: Read> Read for MultiReader<R> {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
-        for r in &mut self.0 {
-            r.read(buf)?;
+        loop {
+            match self.readers.get_mut(self.pos) {
+                Some(r) => {
+                    let n = r.read(buf)?;
+                    if n > 0 {
+                        return Ok(n);
+                    }
+                }
+                None => return Ok(0),
+            }
+            self.pos = self.pos + 1;
         }
-        Ok(buf.len())
     }
 }
 
@@ -48,4 +64,26 @@ where
     }
 }
 
-fn main() {}
+fn main() -> std::io::Result<()> {
+    let header = "---- HEADER ----\n".as_bytes();
+    let content = "Example of MultiReader\n".as_bytes();
+    let footer = "---- FOOTER ----\n".as_bytes();
+    let mut multi_reader = MultiReader::new(vec![header, content, footer]);
+    copy(&mut multi_reader, &mut stdout())?;
+
+    // TeeReader を使用した場合の例。
+    let mut buf = Vec::new();
+    let reader = "Example of TeeReader".as_bytes();
+    let mut tee_reader = TeeReader::new(reader, &mut buf);
+    // データを読み捨てる。
+    let _ = tee_reader.read_to_end(&mut Vec::new())?;
+
+    println!(
+        "{}",
+        // けどバッファには残っている。
+        String::from_utf8(buf)
+            .expect("UTF-8 形式でない文字列の可能性があります。UTF-8 にしてください。")
+    );
+
+    Ok(())
+}
