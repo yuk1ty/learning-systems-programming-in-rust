@@ -5,7 +5,7 @@ use std::{
     usize,
 };
 
-pub struct MultiReader<R> {
+struct MultiReader<R> {
     readers: Vec<R>,
     pos: usize,
 }
@@ -47,7 +47,7 @@ where
     R: Read,
     W: Write,
 {
-    pub fn new(reader: R, writer: W) -> Self {
+    fn new(reader: R, writer: W) -> Self {
         Self { reader, writer }
     }
 }
