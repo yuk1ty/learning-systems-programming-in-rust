@@ -23,7 +23,7 @@ fn main() -> io::Result<()> {
         let mut contents = String::new();
         write_fmt(&mut contents);
         let mut f = File::create(&tmp_path)?;
-        f.write(contents.as_bytes())?;
+        f.write_all(contents.as_bytes())?;
     }
     let written_contents = {
         let mut f = File::open(&tmp_path)?;

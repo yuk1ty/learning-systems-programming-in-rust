@@ -21,9 +21,9 @@ impl From<str::Utf8Error> for BufferError {
 
 fn main() -> Result<(), BufferError> {
     let mut buffer: Vec<u8> = Vec::new();
-    buffer.write(b"bytes.Buffer example1\n")?;
+    buffer.write_all(b"bytes.Buffer example1\n")?;
     println!("{}", str::from_utf8(&buffer)?);
-    buffer.write(b"bytes.Buffer example2\n")?;
+    buffer.write_all(b"bytes.Buffer example2\n")?;
     println!("{}", str::from_utf8(&buffer)?);
     Ok(())
 }
