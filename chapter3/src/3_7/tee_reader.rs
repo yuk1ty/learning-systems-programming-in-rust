@@ -1,11 +1,4 @@
-//! Rust には MultiReader と TeeReader は存在しないため、それらを自前で実装して用意しています。
-
-use std::{
-    io::{copy, stdout, Read, Write},
-    usize,
-};
-
-use lib::io::MultiReader;
+use std::io::{Read, Write};
 
 struct TeeReader<R, W>
 where
@@ -39,12 +32,6 @@ where
 }
 
 fn main() -> std::io::Result<()> {
-    let header = "---- HEADER ----\n".as_bytes();
-    let content = "Example of MultiReader\n".as_bytes();
-    let footer = "---- FOOTER ----\n".as_bytes();
-    let mut multi_reader = MultiReader::new(vec![header, content, footer]);
-    copy(&mut multi_reader, &mut stdout())?;
-
     // TeeReader を使用した場合の例。
     let mut buf = Vec::new();
     let reader = "Example of TeeReader".as_bytes();

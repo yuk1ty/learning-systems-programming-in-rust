@@ -46,7 +46,7 @@ impl<R: Read> Read for MultiReader<R> {
                 }
                 None => return Ok(0),
             }
-            self.pos = self.pos + 1;
+            self.pos += 1;
         }
     }
 }
