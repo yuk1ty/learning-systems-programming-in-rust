@@ -33,6 +33,8 @@ jobs:
 
     - name: cargo clippy
       uses: actions-rs/cargo@v1
+      env:
+        RUSTFLAGS: -D warnings
       with:
         command: clippy
         args: --workspace --all-targets --all-features
