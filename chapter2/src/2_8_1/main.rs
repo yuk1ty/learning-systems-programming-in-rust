@@ -9,9 +9,9 @@ use std::{
 use lib::env::temp_file;
 
 fn write_fmt<W: fmt::Write>(w: &mut W) {
-    write!(
+    writeln!(
         w,
-        "{{}}(\"10\"): {}, {{}}(10): {}, {{:.1}}(10.0): {:.1}\n",
+        "{{}}(\"10\"): {}, {{}}(10): {}, {{:.1}}(10.0): {:.1}",
         "10", 10, 10.0
     )
     .expect("wrong format string")
