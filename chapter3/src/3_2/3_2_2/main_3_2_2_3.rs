@@ -9,7 +9,8 @@ use std::io::{Read, Result, Write};
 pub fn main() -> std::io::Result<()> {
     let mut read: &[u8] = &b"abcdefg".repeat(500 * 1024); //358.4KB Source
     let mut dst: Vec<u8> = vec![];
-    let mut buffer: Box<[u8]> = Box::new([0; 8 * 1024]); //8KB Buffer
+    const BUFFER_SIZE: usize = 8 * 1024;
+    let mut buffer: [u8; BUFFER_SIZE] = [0; BUFFER_SIZE]; //8KB Buffer
     let result = copy_buffer(&mut read, &mut dst, &mut buffer)?;
     println!("{} bytes written.", result);
     Ok(())
