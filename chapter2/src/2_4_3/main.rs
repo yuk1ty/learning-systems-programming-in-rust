@@ -3,13 +3,13 @@ use std::str;
 
 #[derive(Debug)]
 enum BufferError {
-    IOError(std::io::Error),
+    IoError(std::io::Error),
     StrError(str::Utf8Error),
 }
 
 impl From<std::io::Error> for BufferError {
     fn from(error: std::io::Error) -> Self {
-        BufferError::IOError(error)
+        BufferError::IoError(error)
     }
 }
 
