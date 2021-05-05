@@ -10,12 +10,8 @@ use std::{
 /// # Examples
 ///
 /// ```
-/// use lib::env::temp_file;
-///
-/// fn main() {
-///     let file = temp_file();
-///     println!("Temporary file: {}", file.display());
-/// }
+/// let file = temp_file();
+/// println!("Temporary file: {}", file.display());
 /// ```
 pub fn temp_file() -> PathBuf {
     let mut tempdir = std::env::temp_dir();
