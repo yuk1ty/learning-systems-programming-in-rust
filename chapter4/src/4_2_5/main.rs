@@ -28,7 +28,7 @@ trait Context: Debug + Send + Sync {
     fn deadline(&self, deadline: Instant, ok: bool);
     fn done(&self) -> Pin<Box<dyn Future<Output = Result<(), ContextError>> + '_>>;
     fn err(&self) -> Option<ContextError>;
-    fn value(&self, key: &ContextKey) -> Result<&dyn Any, ContextValueError>;
+    fn value(&self, key: &ContextKey) -> Result<Arc<dyn Any>, ContextValueError>;
 }
 
 trait Canceler: Debug + Send + Sync {
@@ -112,8 +112,14 @@ impl Context for WithCancel {
         self.body.lock().unwrap().canceled.clone()
     }
 
-    fn value(&self, _key: &ContextKey) -> Result<&dyn Any, ContextValueError> {
-        todo!()
+    fn value(&self, key: &ContextKey) -> Result<Arc<dyn Any>, ContextValueError> {
+        self.body
+            .lock()
+            .unwrap()
+            .parent
+            .as_ref()
+            .expect("WithCancelは必ず親を持つ")
+            .value(key)
     }
 }
 
@@ -164,7 +170,7 @@ impl Context for Background {
         todo!()
     }
 
-    fn value(&self, _key: &ContextKey) -> Result<&dyn Any, ContextValueError> {
+    fn value(&self, _key: &ContextKey) -> Result<Arc<dyn Any>, ContextValueError> {
         Err(ContextValueError::NotFound)
     }
 }
