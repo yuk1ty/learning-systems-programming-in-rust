@@ -17,5 +17,6 @@ members = [
     "chapter15",
     "chapter16",
     "chapter17",
-    "appendix"
+    "appendix",
+    "lib"
 ]
