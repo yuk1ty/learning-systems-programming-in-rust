@@ -14,7 +14,7 @@ fn read_request_line(req: &mut TcpStream) -> io::Result<String> {
     let mut line_buf = Vec::<u8>::new();
     loop {
         let mut ch_buf = vec![0u8];
-        req.read(&mut ch_buf)?;
+        req.read_exact(&mut ch_buf)?;
         if let Some('\n') = ch_buf.first().map(|b| char::from(*b)) {
             break;
         } else {
@@ -25,7 +25,7 @@ fn read_request_line(req: &mut TcpStream) -> io::Result<String> {
 }
 
 fn handle_http_request(req: &str, res: TcpStream) -> io::Result<()> {
-    if let &["GET", "/", ..] = req.split_whitespace().collect::<Vec<_>>().as_slice() {
+    if let ["GET", "/", ..] = req.split_whitespace().collect::<Vec<_>>().as_slice() {
         get_root(res)?;
     } else {
         eprintln!("cannot accept the following request: {}", req);
