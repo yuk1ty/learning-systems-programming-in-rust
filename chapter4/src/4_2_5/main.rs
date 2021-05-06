@@ -4,7 +4,6 @@ use std::future::Future;
 use std::hash::Hash;
 use std::pin::Pin;
 use std::sync::{Arc, Mutex};
-use tokio;
 use tokio::sync::Notify;
 use tokio::time::Instant;
 
@@ -81,12 +80,7 @@ impl WithCancel {
             .unwrap()
             .children
             .push(this.clone());
-        (
-            this.clone(),
-            CancelFunc {
-                context: this.clone(),
-            },
-        )
+        (this.clone(), CancelFunc { context: this })
     }
 
     pub async fn done(&self) -> Result<(), ContextError> {

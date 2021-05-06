@@ -1,4 +1,3 @@
-use tokio;
 use tokio::sync::mpsc;
 
 fn prime_number() -> mpsc::Receiver<u64> {
