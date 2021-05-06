@@ -59,13 +59,20 @@ struct WithCancel {
     body: Arc<Mutex<ContextBody>>,
 }
 
-trait CancelFuncTrait: FnOnce() + Send {}
-type CancelFunc = Box<dyn FnOnce()>;
+struct CancelFunc<C: Canceler> {
+    context: Arc<C>,
+}
+
+impl<C: Canceler> CancelFunc<C> {
+    pub fn cancel(&self) {
+        self.context.cancel(true, ContextError::Canceled)
+    }
+}
 
 impl WithCancel {
     pub fn new<C: 'static + HasContextBody + Context + Debug>(
         context: Arc<C>,
-    ) -> (Arc<Self>, CancelFunc) {
+    ) -> (Arc<Self>, CancelFunc<Self>) {
         let this = Arc::new(Self {
             cancel_notify: Notify::new(),
             body: Arc::new(Mutex::new(ContextBody {
@@ -81,9 +88,10 @@ impl WithCancel {
             .children
             .push(this.clone());
         (
-            this,
-            //Box::new(move || this.cancel(true, ContextError::Canceled)),
-            Box::new(move || {}),
+            this.clone(),
+            CancelFunc {
+                context: this.clone(),
+            },
         )
     }
 
@@ -179,13 +187,12 @@ async fn main() {
 
     let (ctx, canceler) = WithCancel::new(Background::new()); // context.Background()に関してあまり理解できていない
 
-    let ctx2 = ctx.clone();
     tokio::spawn(async move {
         println!("sub() is finished");
-        ctx.cancel(true, ContextError::Canceled);
+        canceler.cancel();
     });
 
-    let done = ctx2.done().await;
+    let done = ctx.done().await;
     assert_eq!(done.unwrap_err(), ContextError::Canceled);
     println!("all tasks are finished");
 }
