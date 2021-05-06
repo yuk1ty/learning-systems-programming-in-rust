@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use std::any::Any;
 use std::fmt::Debug;
 use std::future::Future;
