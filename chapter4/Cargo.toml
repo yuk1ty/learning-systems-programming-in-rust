@@ -25,3 +25,4 @@ path = "src/4_2_5/main.rs"
 
 [dependencies]
 tokio = { version = "1.5.0", features = ["full"] }
+futures = "0.3.14"
