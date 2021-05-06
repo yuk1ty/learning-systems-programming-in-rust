@@ -35,7 +35,7 @@ fn main() -> io::Result<()> {
     let f1 = create_read_write_temp_file("Example of io.SectionReader")?;
     section_reader(f1)?;
 
-    println!("");
+    println!();
 
     let f2 = create_read_write_temp_file("Example of io.LimitedReader")?;
     limited_reader(f2)?;
