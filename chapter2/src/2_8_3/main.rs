@@ -25,7 +25,7 @@ fn read_request_line(req: &mut TcpStream) -> io::Result<String> {
 }
 
 fn handle_http_request(req: &str, res: TcpStream) -> io::Result<()> {
-    if let &["GET", "/", ..] = req.split_whitespace().collect::<Vec<_>>().as_slice() {
+    if let ["GET", "/", ..] = req.split_whitespace().collect::<Vec<_>>().as_slice() {
         get_root(res)?;
     } else {
         eprintln!("cannot accept the following request: {}", req);
