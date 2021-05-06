@@ -1,17 +1,11 @@
-use futures;
-use futures::future::Either;
-use futures::FutureExt;
 use std::any::Any;
-use std::borrow::{Borrow, BorrowMut};
-use std::error::Error;
 use std::fmt::Debug;
 use std::future::Future;
 use std::hash::Hash;
 use std::pin::Pin;
 use std::sync::{Arc, Mutex};
 use tokio;
-use tokio::sync::watch::error::RecvError;
-use tokio::sync::{watch, Notify};
+use tokio::sync::Notify;
 use tokio::time::Instant;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -106,7 +100,7 @@ impl WithCancel {
 }
 
 impl Context for WithCancel {
-    fn deadline(&self, deadline: Instant, ok: bool) {
+    fn deadline(&self, _deadline: Instant, _ok: bool) {
         todo!()
     }
 
@@ -118,13 +112,13 @@ impl Context for WithCancel {
         self.body.lock().unwrap().canceled.clone()
     }
 
-    fn value(&self, key: &ContextKey) -> Result<&dyn Any, ContextValueError> {
+    fn value(&self, _key: &ContextKey) -> Result<&dyn Any, ContextValueError> {
         todo!()
     }
 }
 
 impl Canceler for WithCancel {
-    fn cancel(&self, remove_from_parent: bool, error: ContextError) {
+    fn cancel(&self, _remove_from_parent: bool, error: ContextError) {
         let mut body = self.body.lock().unwrap();
 
         for child in &body.children {
@@ -158,7 +152,7 @@ impl Background {
 }
 
 impl Context for Background {
-    fn deadline(&self, deadline: Instant, ok: bool) {
+    fn deadline(&self, _deadline: Instant, _ok: bool) {
         todo!()
     }
 
