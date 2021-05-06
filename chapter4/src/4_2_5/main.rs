@@ -4,6 +4,7 @@ use futures::FutureExt;
 use std::any::Any;
 use std::borrow::{Borrow, BorrowMut};
 use std::error::Error;
+use std::fmt::Debug;
 use std::future::Future;
 use std::hash::Hash;
 use std::pin::Pin;
@@ -13,7 +14,7 @@ use tokio::sync::watch::error::RecvError;
 use tokio::sync::{watch, Notify};
 use tokio::time::Instant;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 enum ContextError {
     Canceled,
 }
@@ -29,39 +30,42 @@ enum ContextKey {
     CancelContext,
 }
 
-trait Context {
+trait Context: Debug + Send + Sync {
     fn deadline(&self, deadline: Instant, ok: bool);
     fn done(&self) -> Pin<Box<dyn Future<Output = Result<(), ContextError>> + '_>>;
     fn err(&self) -> Option<ContextError>;
     fn value(&self, key: &ContextKey) -> Result<&dyn Any, ContextValueError>;
 }
 
-trait Canceler {
+trait Canceler: Debug + Send + Sync {
     fn cancel(&self, remove_from_parent: bool, error: ContextError);
     fn done(&self) -> Pin<Box<dyn Future<Output = Result<(), ContextError>> + '_>>;
 }
 
 trait HasContextBody {
-    fn context_body(&self) -> Arc<Mutex<ContextBody>> {
-        self.context_body().clone()
-    }
+    fn context_body(&self) -> Arc<Mutex<ContextBody>>;
 }
 
+#[derive(Debug)]
 struct ContextBody {
     children: Vec<Arc<dyn Canceler>>,
     parent: Option<Arc<dyn Context>>,
     canceled: Option<ContextError>,
 }
 
+#[derive(Debug)]
 struct WithCancel {
     cancel_notify: Notify,
     body: Arc<Mutex<ContextBody>>,
 }
 
-type CancelFunc = fn();
+trait CancelFuncTrait: FnOnce() + Send {}
+type CancelFunc = Box<dyn FnOnce()>;
 
 impl WithCancel {
-    pub fn new<C: 'static + HasContextBody + Context>(context: Arc<C>) -> (Arc<Self>, CancelFunc) {
+    pub fn new<C: 'static + HasContextBody + Context + Debug>(
+        context: Arc<C>,
+    ) -> (Arc<Self>, CancelFunc) {
         let this = Arc::new(Self {
             cancel_notify: Notify::new(),
             body: Arc::new(Mutex::new(ContextBody {
@@ -76,7 +80,11 @@ impl WithCancel {
             .unwrap()
             .children
             .push(this.clone());
-        (this, move || {})
+        (
+            this,
+            //Box::new(move || this.cancel(true, ContextError::Canceled)),
+            Box::new(move || {}),
+        )
     }
 
     pub async fn done(&self) -> Result<(), ContextError> {
@@ -124,6 +132,7 @@ impl Canceler for WithCancel {
     }
 }
 
+#[derive(Debug)]
 struct Background {
     body: Arc<Mutex<ContextBody>>,
 }
@@ -158,7 +167,11 @@ impl Context for Background {
     }
 }
 
-impl HasContextBody for Background {}
+impl HasContextBody for Background {
+    fn context_body(&self) -> Arc<Mutex<ContextBody>> {
+        self.body.clone()
+    }
+}
 
 #[tokio::main]
 async fn main() {
@@ -166,11 +179,13 @@ async fn main() {
 
     let (ctx, canceler) = WithCancel::new(Background::new()); // context.Background()に関してあまり理解できていない
 
+    let ctx2 = ctx.clone();
     tokio::spawn(async move {
         println!("sub() is finished");
-        canceler();
+        ctx.cancel(true, ContextError::Canceled);
     });
 
-    ctx.done().await.unwrap();
+    let done = ctx2.done().await;
+    assert_eq!(done.unwrap_err(), ContextError::Canceled);
     println!("all tasks are finished");
 }
