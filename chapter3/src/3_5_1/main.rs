@@ -1,21 +1,44 @@
 use std::{
-    fs::OpenOptions,
-    io::{self, Write},
+    fs::{File, OpenOptions},
+    io::{self, Read, Seek, Write},
 };
 
-use lib::{env::temp_file, io::SectionReader};
+use lib::{
+    env::temp_file,
+    io::{LimitedReader, SectionReader},
+};
 
-fn main() -> io::Result<()> {
-    // File implements both Read & Seek
+fn create_read_write_temp_file(contents: &str) -> io::Result<File> {
     let mut f = OpenOptions::new()
         .create(true)
         .write(true)
         .read(true)
         .open(temp_file())?;
-    writeln!(f, "Example of io.SectionReader")?;
+    writeln!(f, "{}", contents)?;
+    Ok(f)
+}
 
-    let mut reader = SectionReader::new(f, 14, 7)?;
-    io::copy(&mut reader, &mut io::stdout())?;
+fn section_reader<R: Read + Seek>(reader: R) -> io::Result<()> {
+    let mut section_reader = SectionReader::new(reader, 14, 7)?;
+    io::copy(&mut section_reader, &mut io::stdout())?;
+    Ok(())
+}
+
+fn limited_reader<R: Read + Seek>(reader: R) -> io::Result<()> {
+    let mut limited_reader = LimitedReader::new(reader, 16)?;
+    io::copy(&mut limited_reader, &mut io::stdout())?;
+    Ok(())
+}
+
+fn main() -> io::Result<()> {
+    // File implements both Read and Seek
+    let f1 = create_read_write_temp_file("Example of io.SectionReader")?;
+    section_reader(f1)?;
+
+    println!("");
+
+    let f2 = create_read_write_temp_file("Example of io.LimitedReader")?;
+    limited_reader(f2)?;
 
     Ok(())
 }
