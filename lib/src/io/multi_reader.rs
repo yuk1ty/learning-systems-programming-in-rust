@@ -1,4 +1,4 @@
-use std::io::Read;
+use std::{collections::VecDeque, io::Read};
 
 /// Takes multiple `std::io::Read` at once.
 /// This is inspired by `io.MultiReader` in Go.
@@ -22,23 +22,24 @@ use std::io::Read;
 /// }
 /// ```
 pub struct MultiReader<R: Read> {
-    readers: Vec<R>,
+    readers: VecDeque<R>,
     /// Points to where we read right now.
-    pos: usize,
+    current: Option<R>,
 }
 
 impl<R: Read> MultiReader<R> {
     /// Creates `MultiReader`. `pos` is set to 0 by default.
-    pub fn new(readers: Vec<R>) -> Self {
-        Self { readers, pos: 0 }
+    pub fn new(mut readers: VecDeque<R>) -> Self {
+        let current = readers.pop_front();
+        Self { readers, current }
     }
 }
 
 impl<R: Read> Read for MultiReader<R> {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
         loop {
-            match self.readers.get_mut(self.pos) {
-                Some(r) => {
+            match self.current.take() {
+                Some(ref mut r) => {
                     let n = r.read(buf)?;
                     if n > 0 {
                         return Ok(n);
@@ -46,7 +47,7 @@ impl<R: Read> Read for MultiReader<R> {
                 }
                 None => return Ok(0),
             }
-            self.pos += 1;
+            self.current = self.readers.pop_front();
         }
     }
 }
