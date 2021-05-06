@@ -21,7 +21,7 @@ use std::io::Read;
 ///     Ok(())
 /// }
 /// ```
-pub struct MultiReader<R> {
+pub struct MultiReader<R: Read> {
     readers: Vec<R>,
     /// Points to where we read right now.
     pos: usize,
