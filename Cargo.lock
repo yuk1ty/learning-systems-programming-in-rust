@@ -165,7 +165,6 @@ name = "chapter4"
 version = "0.1.0"
 dependencies = [
  "lib",
- "signal-hook",
  "tokio",
 ]
 
@@ -526,16 +525,6 @@ dependencies = [
  "itoa",
  "ryu",
  "serde",
-]
-
-[[package]]
-name = "signal-hook"
-version = "0.3.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ef33d6d0cd06e0840fba9985aab098c147e67e05cee14d412d3345ed14ff30ac"
-dependencies = [
- "libc",
- "signal-hook-registry",
 ]
 
 [[package]]
