@@ -1,5 +1,4 @@
 use chrono::Local;
-use serde_json;
 use serde_json::json;
 
 fn main() -> serde_json::Result<()> {
