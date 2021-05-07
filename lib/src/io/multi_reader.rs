@@ -38,7 +38,7 @@ impl<R: Read> MultiReader<R> {
 impl<R: Read> Read for MultiReader<R> {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
         loop {
-            match self.current.take() {
+            match self.current {
                 Some(ref mut r) => {
                     let n = r.read(buf)?;
                     if n > 0 {
