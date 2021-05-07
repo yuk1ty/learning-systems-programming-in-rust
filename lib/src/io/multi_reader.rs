@@ -7,8 +7,8 @@ use std::{collections::VecDeque, io::Read};
 ///
 /// ```
 /// use std::{
+///     collections::VecDeque,
 ///     io::{copy, stdout, Read},
-///     usize,
 /// };
 /// use lib::io::MultiReader;
 ///
@@ -16,7 +16,11 @@ use std::{collections::VecDeque, io::Read};
 ///     let header = "---- HEADER ----\n".as_bytes();
 ///     let content = "Example of MultiReader\n".as_bytes();
 ///     let footer = "---- FOOTER ----\n".as_bytes();
-///     let mut multi_reader = MultiReader::new(vec![header, content, footer]);
+///     let mut multi_reader = MultiReader::new(VecDeque::from(vec![
+///         Box::new(header) as Box<dyn Read>,
+///         Box::new(content) as Box<dyn Read>,
+///         Box::new(footer) as Box<dyn Read>,
+///     ]));
 ///     copy(&mut multi_reader, &mut stdout())?;
 ///     Ok(())
 /// }
