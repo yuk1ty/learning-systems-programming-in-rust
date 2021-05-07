@@ -21,21 +21,21 @@ use std::{collections::VecDeque, io::Read};
 ///     Ok(())
 /// }
 /// ```
-pub struct MultiReader<R: Read> {
-    readers: VecDeque<R>,
+pub struct MultiReader {
+    readers: VecDeque<Box<dyn Read>>,
     /// Points to where we read right now.
-    current: Option<R>,
+    current: Option<Box<dyn Read>>,
 }
 
-impl<R: Read> MultiReader<R> {
+impl MultiReader {
     /// Creates `MultiReader`. `pos` is set to 0 by default.
-    pub fn new(mut readers: VecDeque<R>) -> Self {
+    pub fn new(mut readers: VecDeque<Box<dyn Read>>) -> Self {
         let current = readers.pop_front();
         Self { readers, current }
     }
 }
 
-impl<R: Read> Read for MultiReader<R> {
+impl Read for MultiReader {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
         loop {
             match self.current {
