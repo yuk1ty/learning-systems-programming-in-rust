@@ -8,3 +8,11 @@ edition = "2018"
 
 [dependencies]
 lib = { path = "../lib" }
+
+[[bin]]
+name = "main_9_2_1"
+path = "src/main_9_2_1.rs"
+
+[[bin]]
+name = "main_9_2_3"
+path = "src/main_9_2_3.rs"
