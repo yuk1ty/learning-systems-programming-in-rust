@@ -34,7 +34,6 @@ trait Context: Send + Sync {
 
 trait Canceler: Send + Sync {
     fn cancel(&self, remove_from_parent: bool, error: ContextError);
-    fn done(&self) -> Pin<Box<dyn Future<Output = Result<(), ContextError>> + '_>>;
 }
 
 trait HasContextBody {
@@ -127,10 +126,6 @@ impl Canceler for ContextWithCancel {
         body.canceled.replace(error);
 
         self.cancel_notify.notify_waiters();
-    }
-
-    fn done(&self) -> Pin<Box<dyn Future<Output = Result<(), ContextError>> + '_>> {
-        Context::done(self)
     }
 }
 
