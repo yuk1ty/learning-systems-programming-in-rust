@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use std::any::Any;
 use std::fmt::Debug;
 use std::future::Future;
@@ -7,7 +5,6 @@ use std::hash::Hash;
 use std::pin::Pin;
 use std::sync::{Arc, Mutex};
 use tokio::sync::Notify;
-use tokio::time::Instant;
 
 #[derive(Debug, Clone, PartialEq)]
 enum ContextError {
@@ -20,13 +17,9 @@ enum ContextValueError {
 }
 
 #[derive(Debug, PartialOrd, PartialEq, Eq, Hash)]
-enum ContextKey {
-    String(String),
-    CancelContext,
-}
+enum ContextKey {}
 
 trait Context: Send + Sync {
-    fn deadline(&self, deadline: Instant, ok: bool);
     fn done(&self) -> Pin<Box<dyn Future<Output = Result<(), ContextError>> + '_>>;
     fn err(&self) -> Option<ContextError>;
     fn value(&self, key: &ContextKey) -> Result<Arc<dyn Any>, ContextValueError>;
@@ -93,10 +86,6 @@ impl ContextWithCancel {
 }
 
 impl Context for ContextWithCancel {
-    fn deadline(&self, _deadline: Instant, _ok: bool) {
-        todo!()
-    }
-
     fn done(&self) -> Pin<Box<dyn Future<Output = Result<(), ContextError>> + '_>> {
         Box::pin(ContextWithCancel::done(self))
     }
@@ -146,10 +135,6 @@ impl BackgroundContext {
 }
 
 impl Context for BackgroundContext {
-    fn deadline(&self, _deadline: Instant, _ok: bool) {
-        todo!()
-    }
-
     fn done(&self) -> Pin<Box<dyn Future<Output = Result<(), ContextError>>>> {
         todo!()
     }
