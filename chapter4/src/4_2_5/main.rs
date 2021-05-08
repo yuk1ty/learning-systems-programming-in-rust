@@ -47,7 +47,7 @@ struct ContextBody {
     canceled: Option<ContextError>,
 }
 
-struct WithCancel {
+struct ContextWithCancel {
     cancel_notify: Notify,
     body: Arc<Mutex<ContextBody>>,
 }
@@ -62,7 +62,7 @@ impl<C: Canceler> CancelFunc<C> {
     }
 }
 
-impl WithCancel {
+impl ContextWithCancel {
     pub fn new<C: 'static + HasContextBody + Context>(
         context: Arc<C>,
     ) -> (Arc<Self>, CancelFunc<Self>) {
@@ -93,13 +93,13 @@ impl WithCancel {
     }
 }
 
-impl Context for WithCancel {
+impl Context for ContextWithCancel {
     fn deadline(&self, _deadline: Instant, _ok: bool) {
         todo!()
     }
 
     fn done(&self) -> Pin<Box<dyn Future<Output = Result<(), ContextError>> + '_>> {
-        Box::pin(WithCancel::done(self))
+        Box::pin(ContextWithCancel::done(self))
     }
 
     fn err(&self) -> Option<ContextError> {
@@ -117,7 +117,7 @@ impl Context for WithCancel {
     }
 }
 
-impl Canceler for WithCancel {
+impl Canceler for ContextWithCancel {
     fn cancel(&self, _remove_from_parent: bool, error: ContextError) {
         let mut body = self.body.lock().unwrap();
 
@@ -134,13 +134,13 @@ impl Canceler for WithCancel {
     }
 }
 
-struct Background {
+struct BackgroundContext {
     body: Arc<Mutex<ContextBody>>,
 }
 
-impl Background {
+impl BackgroundContext {
     fn new() -> Arc<Self> {
-        Arc::new(Background {
+        Arc::new(BackgroundContext {
             body: Arc::new(Mutex::new(ContextBody {
                 parent: None,
                 children: vec![],
@@ -150,7 +150,7 @@ impl Background {
     }
 }
 
-impl Context for Background {
+impl Context for BackgroundContext {
     fn deadline(&self, _deadline: Instant, _ok: bool) {
         todo!()
     }
@@ -168,7 +168,7 @@ impl Context for Background {
     }
 }
 
-impl HasContextBody for Background {
+impl HasContextBody for BackgroundContext {
     fn context_body(&self) -> Arc<Mutex<ContextBody>> {
         self.body.clone()
     }
@@ -178,7 +178,7 @@ impl HasContextBody for Background {
 async fn main() {
     println!("start sub()");
 
-    let (ctx, canceler) = WithCancel::new(Background::new()); // Backgroundはrootとなる空のContext
+    let (ctx, canceler) = ContextWithCancel::new(BackgroundContext::new()); // Backgroundはrootとなる空のContext
 
     tokio::spawn(async move {
         println!("sub() is finished");
