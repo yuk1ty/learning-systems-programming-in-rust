@@ -32,7 +32,7 @@ trait Context: Send + Sync {
     fn value(&self, key: &ContextKey) -> Result<Arc<dyn Any>, ContextValueError>;
 }
 
-trait Canceler: Send + Sync {
+trait CancelPropagate: Send + Sync {
     fn cancel(&self, remove_from_parent: bool, error: ContextError);
 }
 
@@ -41,7 +41,7 @@ trait HasContextBody {
 }
 
 struct ContextBody {
-    children: Vec<Arc<dyn Canceler>>,
+    children: Vec<Arc<dyn CancelPropagate>>,
     parent: Option<Arc<dyn Context>>,
     canceled: Option<ContextError>,
 }
@@ -51,11 +51,11 @@ struct ContextWithCancel {
     body: Arc<Mutex<ContextBody>>,
 }
 
-struct CancelFunc<C: Canceler> {
+struct CancelFunc<C: CancelPropagate> {
     context: Arc<C>,
 }
 
-impl<C: Canceler> CancelFunc<C> {
+impl<C: CancelPropagate> CancelFunc<C> {
     pub fn cancel(&self) {
         self.context.cancel(true, ContextError::Canceled)
     }
@@ -116,7 +116,7 @@ impl Context for ContextWithCancel {
     }
 }
 
-impl Canceler for ContextWithCancel {
+impl CancelPropagate for ContextWithCancel {
     fn cancel(&self, _remove_from_parent: bool, error: ContextError) {
         let mut body = self.body.lock().unwrap();
 
