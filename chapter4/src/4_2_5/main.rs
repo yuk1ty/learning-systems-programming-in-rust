@@ -33,7 +33,7 @@ trait Context: Send + Sync {
 }
 
 trait CancelPropagate: Send + Sync {
-    fn cancel(&self, remove_from_parent: bool, error: ContextError);
+    fn cancel_propagate(&self, error: ContextError);
 }
 
 trait HasContextBody {
@@ -51,20 +51,20 @@ struct ContextWithCancel {
     body: Arc<Mutex<ContextBody>>,
 }
 
-struct CancelFunc<C: CancelPropagate> {
+struct Canceler<C: CancelPropagate> {
     context: Arc<C>,
 }
 
-impl<C: CancelPropagate> CancelFunc<C> {
+impl<C: CancelPropagate> Canceler<C> {
     pub fn cancel(&self) {
-        self.context.cancel(true, ContextError::Canceled)
+        self.context.cancel_propagate(ContextError::Canceled)
     }
 }
 
 impl ContextWithCancel {
     pub fn new<C: 'static + HasContextBody + Context>(
         context: Arc<C>,
-    ) -> (Arc<Self>, CancelFunc<Self>) {
+    ) -> (Arc<Self>, Canceler<Self>) {
         let this = Arc::new(Self {
             cancel_notify: Notify::new(),
             body: Arc::new(Mutex::new(ContextBody {
@@ -79,7 +79,7 @@ impl ContextWithCancel {
             .unwrap()
             .children
             .push(this.clone());
-        (this.clone(), CancelFunc { context: this })
+        (this.clone(), Canceler { context: this })
     }
 
     pub async fn done(&self) -> Result<(), ContextError> {
@@ -117,11 +117,11 @@ impl Context for ContextWithCancel {
 }
 
 impl CancelPropagate for ContextWithCancel {
-    fn cancel(&self, _remove_from_parent: bool, error: ContextError) {
+    fn cancel_propagate(&self, error: ContextError) {
         let mut body = self.body.lock().unwrap();
 
         for child in &body.children {
-            child.cancel(false, error.clone())
+            child.cancel_propagate(error.clone())
         }
         body.canceled.replace(error);
 
