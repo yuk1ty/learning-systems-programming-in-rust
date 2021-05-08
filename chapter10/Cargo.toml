@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 lib = { path = "../lib" }
+notify = "4.0.16"
 
 [[bin]]
 name = "10_1"
