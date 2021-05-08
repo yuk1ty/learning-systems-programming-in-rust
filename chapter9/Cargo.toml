@@ -12,3 +12,7 @@ lib = { path = "../lib" }
 [[bin]]
 name = "9_5_1"
 path = "src/9_5_1/main.rs"
+
+[[bin]]
+name = "9_5_2"
+path = "src/9_5_2/main.rs"
