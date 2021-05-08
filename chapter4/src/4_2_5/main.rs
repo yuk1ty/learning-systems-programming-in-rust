@@ -25,14 +25,14 @@ enum ContextKey {
     CancelContext,
 }
 
-trait Context: Debug + Send + Sync {
+trait Context: Send + Sync {
     fn deadline(&self, deadline: Instant, ok: bool);
     fn done(&self) -> Pin<Box<dyn Future<Output = Result<(), ContextError>> + '_>>;
     fn err(&self) -> Option<ContextError>;
     fn value(&self, key: &ContextKey) -> Result<Arc<dyn Any>, ContextValueError>;
 }
 
-trait Canceler: Debug + Send + Sync {
+trait Canceler: Send + Sync {
     fn cancel(&self, remove_from_parent: bool, error: ContextError);
     fn done(&self) -> Pin<Box<dyn Future<Output = Result<(), ContextError>> + '_>>;
 }
@@ -41,14 +41,12 @@ trait HasContextBody {
     fn context_body(&self) -> Arc<Mutex<ContextBody>>;
 }
 
-#[derive(Debug)]
 struct ContextBody {
     children: Vec<Arc<dyn Canceler>>,
     parent: Option<Arc<dyn Context>>,
     canceled: Option<ContextError>,
 }
 
-#[derive(Debug)]
 struct WithCancel {
     cancel_notify: Notify,
     body: Arc<Mutex<ContextBody>>,
@@ -65,7 +63,7 @@ impl<C: Canceler> CancelFunc<C> {
 }
 
 impl WithCancel {
-    pub fn new<C: 'static + HasContextBody + Context + Debug>(
+    pub fn new<C: 'static + HasContextBody + Context>(
         context: Arc<C>,
     ) -> (Arc<Self>, CancelFunc<Self>) {
         let this = Arc::new(Self {
@@ -136,7 +134,6 @@ impl Canceler for WithCancel {
     }
 }
 
-#[derive(Debug)]
 struct Background {
     body: Arc<Mutex<ContextBody>>,
 }
