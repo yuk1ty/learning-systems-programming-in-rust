@@ -178,7 +178,7 @@ impl HasContextBody for Background {
 async fn main() {
     println!("start sub()");
 
-    let (ctx, canceler) = WithCancel::new(Background::new()); // context.Background()に関してあまり理解できていない
+    let (ctx, canceler) = WithCancel::new(Background::new()); // Backgroundはrootとなる空のContext
 
     tokio::spawn(async move {
         println!("sub() is finished");
