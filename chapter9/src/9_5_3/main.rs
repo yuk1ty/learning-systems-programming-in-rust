@@ -11,21 +11,16 @@ fn main() {
         exit(1);
     }
 
-    match env::var_os("PATH") {
-        Some(paths) => {
-            for path in env::split_paths(&paths) {
-                let exec_path = path.join(&args[1]);
-                if exec_path.exists() {
-                    println!("{}", exec_path.to_str().expect("faled to convert to str"));
-                    return;
-                }
-            }
-        }
-        None => {
-            println!("failed to get PATH");
-            exit(1)
-        }
-    }
-
-    exit(1);
+    let paths = env::var_os("PATH").expect("failed to get PATH");
+    env::split_paths(&paths)
+        .find_map(|path| {
+            let exec_path = path.join(&args[1]);
+            exec_path.exists().then(|| exec_path)
+        })
+        .map_or_else(
+            || exit(1),
+            |exec_path| {
+                println!("{}", exec_path.to_str().expect("faled to convert to str"));
+            },
+        );
 }
