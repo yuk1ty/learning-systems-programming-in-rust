@@ -4,13 +4,15 @@ use std::fs;
 
 fn open(filename: &str) -> std::io::Result<fs::File> {
     let mut f = fs::File::create(filename)?;
-    let text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et\
-		dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex\
-		ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu\
-		fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt\
-		mollit anim id est laborum.";
+    let text = b"\n\
+		 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et\n\
+		 dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex\n\
+		 ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu\n\
+		 fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt\n\
+		 mollit anim id est laborum.\n\
+		 ";
 
-    write!(f, "{}", text)?;
+    f.write_all(text)?;
     Ok(f)
 }
 
