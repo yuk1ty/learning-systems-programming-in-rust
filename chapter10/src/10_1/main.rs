@@ -1,6 +1,5 @@
 use notify::Watcher as _;
 use notify::{raw_watcher, RecursiveMode};
-use std::time::Duration;
 use std::{path::Path, sync::mpsc::channel};
 
 fn main() {
