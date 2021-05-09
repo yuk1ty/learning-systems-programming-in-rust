@@ -1,6 +1,5 @@
-use std::io::Write;
 use std::fs;
-
+use std::io::Write;
 
 fn open(filename: &str) -> std::io::Result<fs::File> {
     let mut f = fs::File::create(filename)?;
@@ -19,7 +18,7 @@ fn open(filename: &str) -> std::io::Result<fs::File> {
 fn main() -> std::io::Result<()> {
     let filename = "server.log";
     let _ = open(filename)?;
-    
+
     ////
     // ファイルの削除
 
@@ -53,11 +52,11 @@ fn main() -> std::io::Result<()> {
     /*
     let _ = open("old_name.txt")?;
     match fs::rename(filename, "/other_device/new_file.txt") {
-	Ok(_) => println!("success rename"),
-	Err(_) => {
-	    fs::copy("old_name.txt", "/other_device/new_file.txt")?;
-	    fs::remove_file("old_name.txt")?;
-	}
+    Ok(_) => println!("success rename"),
+    Err(_) => {
+        fs::copy("old_name.txt", "/other_device/new_file.txt")?;
+        fs::remove_file("old_name.txt")?;
+    }
     }
      */
     Ok(())
