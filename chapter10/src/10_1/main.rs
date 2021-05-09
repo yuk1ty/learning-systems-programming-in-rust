@@ -1,4 +1,5 @@
-use notify::{watcher, RecursiveMode, Watcher};
+use notify::Watcher as _;
+use notify::{raw_watcher, RecursiveMode};
 use std::time::Duration;
 use std::{path::Path, sync::mpsc::channel};
 
@@ -10,14 +11,14 @@ fn main() {
 
     // Create a watcher object, delivering debounced events.
     // The notification back-end is selected based on the platform.
-    let mut watcher = watcher(tx, Duration::from_secs(10))
-        .expect("I'm not thinking about the case where the watcher creation fails.");
+    let mut watcher =
+        raw_watcher(tx).expect("the initialization of watcher shouldn't fail on this code.");
 
     // Add a path to be watched. All files and directories at that path and
     // below will be monitored for changes.
     watcher
         .watch(monitoring_target, RecursiveMode::Recursive)
-        .expect("std::env::current_dir shouldn't fail");
+        .expect("std::env::current_dir shouldn't fail on this code");
 
     while counter < 3 {
         match rx.recv() {
