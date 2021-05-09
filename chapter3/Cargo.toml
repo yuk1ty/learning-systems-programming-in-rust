@@ -50,3 +50,6 @@ path = "src/3_6_1/main.rs"
 [[bin]]
 name = "3_6_3"
 path = "src/3_6_3/main.rs"
+[[bin]]
+name = "3_6_2"
+path = "src/3_6_2/main.rs"
