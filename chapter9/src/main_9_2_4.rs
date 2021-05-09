@@ -45,7 +45,7 @@ fn main() -> std::io::Result<()> {
     // 移動
     let _ = open(filename)?;
     fs::create_dir("newdir")?;
-    fs::rename(filename, "newdir/renamed.txt")?;
+    fs::rename(filename, "newdir/file.txt")?;
 
     //// デバイスやドライブが異なる場合はコピーする必要がある
     /*
