@@ -3,7 +3,7 @@ use std::fmt::{Debug, Display, Formatter};
 use std::future::Future;
 use std::hash::Hash;
 use std::pin::Pin;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, Weak};
 use tokio::sync::Notify;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -51,7 +51,7 @@ trait HasContextTree {
 
 struct ContextTree {
     children: Vec<Arc<dyn CancelPropagate>>,
-    parent: Option<Arc<dyn Context>>,
+    parent: Option<Weak<dyn Context>>,
     canceled: Option<ContextError>,
 }
 
@@ -74,12 +74,13 @@ impl ContextWithCancel {
     pub fn new<C: 'static + HasContextTree + Context>(
         context: Arc<C>,
     ) -> (Arc<Self>, Canceler<Self>) {
+        let c: Arc<dyn Context> = context.clone();
         let this = Arc::new(Self {
             cancel_notify: Notify::new(),
             tree_node: Arc::new(Mutex::new(ContextTree {
                 canceled: None,
                 children: vec![],
-                parent: Some(context.clone()),
+                parent: Some(Arc::downgrade(&c)),
             })),
         });
         context
@@ -117,6 +118,8 @@ impl Context for ContextWithCancel {
             .parent
             .as_ref()
             .expect("WithCancelは必ず親を持つ")
+            .upgrade()
+            .expect("親がすでに開放されています")
             .value(key)
     }
 }
