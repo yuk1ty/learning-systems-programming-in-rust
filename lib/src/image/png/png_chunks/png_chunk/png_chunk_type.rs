@@ -6,6 +6,10 @@ use std::fmt::Display;
 pub struct PngChunkType([u8; 4]);
 
 impl PngChunkType {
+    pub fn is_text(&self) -> bool {
+        self.0 == "tEXt".as_bytes()
+    }
+
     pub(super) fn new(data: [u8; 4]) -> Self {
         Self(data)
     }

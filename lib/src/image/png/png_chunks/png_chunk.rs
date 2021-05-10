@@ -110,12 +110,17 @@ impl PngChunk {
 
 impl Display for PngChunk {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
+        let mut s = format!(
             "Chunk type: {}, Data len: {}, CRC: {:#X}",
             self.typ,
             self.len,
             u32::from_be_bytes(self.crc)
-        )
+        );
+        if self.typ.is_text() {
+            s = format!(r#"{} - "{}""#, s, String::from_utf8(self.data.clone()).expect(
+                "tEXt chunk can have printable Latin-1 text so conversion into UTF-8 may fail here",
+            ));
+        }
+        write!(f, "{}", s)
     }
 }
