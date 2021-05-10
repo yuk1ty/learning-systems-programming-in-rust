@@ -7,6 +7,7 @@ use std::{
 
 pub use png_chunk_type::PngChunkType;
 
+/// Represents a chunk of PNG format.
 #[derive(Clone, Eq, PartialEq, Hash, Debug)]
 pub struct PngChunk {
     len: u32,

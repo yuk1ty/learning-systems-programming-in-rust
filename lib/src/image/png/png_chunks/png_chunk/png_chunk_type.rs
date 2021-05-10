@@ -1,5 +1,7 @@
 use std::fmt::Display;
 
+/// PNG's chunk types.
+/// "IHDR", "sRGB", for example.
 #[derive(Clone, Eq, PartialEq, Hash, Debug)]
 pub struct PngChunkType([u8; 4]);
 

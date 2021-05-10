@@ -4,6 +4,7 @@ use std::io::Read;
 
 pub use png_chunk::{PngChunk, PngChunkType};
 
+/// Iterator of PngChunk.
 #[derive(Clone, Eq, PartialEq, Hash, Debug)]
 pub struct PngChunks<R>
 where

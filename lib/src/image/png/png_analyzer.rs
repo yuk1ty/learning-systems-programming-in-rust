@@ -2,6 +2,7 @@ use std::io::Read;
 
 use super::PngChunks;
 
+/// Reads PNG file signature and chunks.
 #[derive(Debug)]
 pub struct PngAnalyzer<R>
 where
