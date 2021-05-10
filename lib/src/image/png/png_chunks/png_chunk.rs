@@ -17,6 +17,25 @@ pub struct PngChunk {
 }
 
 impl PngChunk {
+    /// Creates "tEXt" chunk
+    pub fn new_text_chunk(text: String) -> Self {
+        let len = text.len() as u32;
+        let typ = PngChunkType::new([b't', b'E', b'X', b't']);
+        let data = text.into_bytes();
+        let crc = {
+            let mut hasher = crc32fast::Hasher::new();
+            hasher.update(&data);
+            let crc32 = hasher.finalize();
+            crc32.to_be_bytes()
+        };
+        Self {
+            len,
+            typ,
+            crc,
+            data,
+        }
+    }
+
     /// # Returns
     ///
     /// None when `r` points to EOF
