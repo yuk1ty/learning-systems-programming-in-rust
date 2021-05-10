@@ -1,5 +1,5 @@
 use std::any::Any;
-use std::fmt::Debug;
+use std::fmt::{Debug, Display, Formatter};
 use std::future::Future;
 use std::hash::Hash;
 use std::pin::Pin;
@@ -11,10 +11,26 @@ enum ContextError {
     Canceled,
 }
 
+impl Display for ContextError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+impl std::error::Error for ContextError {}
+
 #[derive(Debug, Clone)]
 enum ContextValueError {
     NotFound,
 }
+
+impl Display for ContextValueError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+impl std::error::Error for ContextValueError {}
 
 #[derive(Debug, PartialOrd, PartialEq, Eq, Hash)]
 enum ContextKey {}
