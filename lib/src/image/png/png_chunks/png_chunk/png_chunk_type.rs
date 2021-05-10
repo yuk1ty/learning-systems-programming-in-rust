@@ -9,6 +9,10 @@ impl PngChunkType {
     pub(super) fn new(data: [u8; 4]) -> Self {
         Self(data)
     }
+
+    pub(super) fn as_slice(&self) -> &[u8] {
+        &self.0
+    }
 }
 
 impl Display for PngChunkType {

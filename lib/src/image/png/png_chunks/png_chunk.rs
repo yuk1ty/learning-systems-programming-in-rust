@@ -62,6 +62,14 @@ impl PngChunk {
         }
     }
 
+    pub(in super::super) fn into_vec(mut self) -> Vec<u8> {
+        let mut bin = self.len.to_be_bytes().to_vec();
+        bin.append(&mut self.typ.as_slice().to_vec());
+        bin.append(&mut self.data);
+        bin.append(&mut self.crc.to_vec());
+        bin
+    }
+
     fn read_len<R>(r: &mut R) -> io::Result<u32>
     where
         R: Read,
