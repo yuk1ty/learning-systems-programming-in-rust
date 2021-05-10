@@ -29,11 +29,11 @@ trait CancelPropagate: Send + Sync {
     fn cancel_propagate(&self, error: ContextError);
 }
 
-trait HasContextBody {
-    fn context_body(&self) -> Arc<Mutex<ContextBody>>;
+trait HasContextTree {
+    fn context_tree(&self) -> Arc<Mutex<ContextTree>>;
 }
 
-struct ContextBody {
+struct ContextTree {
     children: Vec<Arc<dyn CancelPropagate>>,
     parent: Option<Arc<dyn Context>>,
     canceled: Option<ContextError>,
@@ -41,7 +41,7 @@ struct ContextBody {
 
 struct ContextWithCancel {
     cancel_notify: Notify,
-    body: Arc<Mutex<ContextBody>>,
+    tree_node: Arc<Mutex<ContextTree>>,
 }
 
 struct Canceler<C: CancelPropagate> {
@@ -55,19 +55,19 @@ impl<C: CancelPropagate> Canceler<C> {
 }
 
 impl ContextWithCancel {
-    pub fn new<C: 'static + HasContextBody + Context>(
+    pub fn new<C: 'static + HasContextTree + Context>(
         context: Arc<C>,
     ) -> (Arc<Self>, Canceler<Self>) {
         let this = Arc::new(Self {
             cancel_notify: Notify::new(),
-            body: Arc::new(Mutex::new(ContextBody {
+            tree_node: Arc::new(Mutex::new(ContextTree {
                 canceled: None,
                 children: vec![],
                 parent: Some(context.clone()),
             })),
         });
         context
-            .context_body()
+            .context_tree()
             .lock()
             .unwrap()
             .children
@@ -77,7 +77,7 @@ impl ContextWithCancel {
 
     pub async fn done(&self) -> Result<(), ContextError> {
         let _ = self.cancel_notify.notified().await;
-        if let Some(e) = self.body.lock().unwrap().canceled.clone() {
+        if let Some(e) = self.tree_node.lock().unwrap().canceled.clone() {
             Err(e)
         } else {
             Ok(())
@@ -91,11 +91,11 @@ impl Context for ContextWithCancel {
     }
 
     fn err(&self) -> Option<ContextError> {
-        self.body.lock().unwrap().canceled.clone()
+        self.tree_node.lock().unwrap().canceled.clone()
     }
 
     fn value(&self, key: &ContextKey) -> Result<Arc<dyn Any>, ContextValueError> {
-        self.body
+        self.tree_node
             .lock()
             .unwrap()
             .parent
@@ -107,7 +107,7 @@ impl Context for ContextWithCancel {
 
 impl CancelPropagate for ContextWithCancel {
     fn cancel_propagate(&self, error: ContextError) {
-        let mut body = self.body.lock().unwrap();
+        let mut body = self.tree_node.lock().unwrap();
 
         for child in &body.children {
             child.cancel_propagate(error.clone())
@@ -119,13 +119,13 @@ impl CancelPropagate for ContextWithCancel {
 }
 
 struct BackgroundContext {
-    body: Arc<Mutex<ContextBody>>,
+    body: Arc<Mutex<ContextTree>>,
 }
 
 impl BackgroundContext {
     fn new() -> Arc<Self> {
         Arc::new(BackgroundContext {
-            body: Arc::new(Mutex::new(ContextBody {
+            body: Arc::new(Mutex::new(ContextTree {
                 parent: None,
                 children: vec![],
                 canceled: None,
@@ -148,8 +148,8 @@ impl Context for BackgroundContext {
     }
 }
 
-impl HasContextBody for BackgroundContext {
-    fn context_body(&self) -> Arc<Mutex<ContextBody>> {
+impl HasContextTree for BackgroundContext {
+    fn context_tree(&self) -> Arc<Mutex<ContextTree>> {
         self.body.clone()
     }
 }
