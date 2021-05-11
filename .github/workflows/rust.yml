@@ -53,5 +53,11 @@ jobs:
   run_asm_syscall: # TODO 削除
     runs-on: ubuntu-latest
     steps:
+    - name: Install rust-toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+        override: true
+        profile: minimal
     - uses: actions/checkout@v2
     - run: cd chapter10_2_asm_syscall ; cargo +nightly run
