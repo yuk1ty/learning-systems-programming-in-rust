@@ -19,5 +19,5 @@ where
     R: Read,
     W: Write,
 {
-    return copy(&mut reader.take(size), writer);
+    copy(&mut reader.take(size), writer)
 }
