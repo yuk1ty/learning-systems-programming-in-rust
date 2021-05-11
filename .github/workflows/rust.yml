@@ -49,3 +49,5 @@ jobs:
       run: RUSTFLAGS='-D warnings' cargo build --all-targets --all-features --verbose
     - name: Run tests
       run: cargo test --verbose
+
+    - run: cargo run --bin 10_2_asm_syscall  # TODO 削除
