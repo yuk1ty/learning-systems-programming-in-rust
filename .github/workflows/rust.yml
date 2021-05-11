@@ -50,4 +50,8 @@ jobs:
     - name: Run tests
       run: cargo test --verbose
 
-    - run: cd chapter10_2_asm_syscall ; cargo +nightly run  # TODO 削除
+  run_asm_syscall: # TODO 削除
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: cd chapter10_2_asm_syscall ; cargo +nightly run
