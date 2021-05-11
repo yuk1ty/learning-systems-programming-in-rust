@@ -23,7 +23,7 @@ fn main_linux_x86_64() -> linux::Result<()> {
 
 #[cfg(all(target_os = "linux", target_arch = "x86_64"))]
 fn main() {
-    main_linux_x86_64()
+    main_linux_x86_64().unwrap();
 }
 
 #[cfg(not(all(target_os = "linux", target_arch = "x86_64")))]
