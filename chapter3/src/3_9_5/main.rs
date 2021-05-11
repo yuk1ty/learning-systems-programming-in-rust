@@ -20,10 +20,12 @@ where
 }
 
 fn main() -> Result<()> {
-    let mut file = File::open("test.txt").expect(&format!(
-        "動作には4バイト以上の {}/test.txt が必要です",
-        std::env::current_dir()?.display()
-    ));
+    let mut file = File::open("test.txt").unwrap_or_else(|_| {
+        panic!(
+            "動作には4バイト以上の {}/test.txt が必要です",
+            std::env::current_dir().unwrap().display()
+        )
+    });
     let mut new_file = File::create("new_test.txt")?;
 
     copy_n(&mut file, &mut new_file, 4)?;

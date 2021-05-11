@@ -19,17 +19,25 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Install rust-toolchain with rustfmt
+    - name: Install rust-toolchain
       uses: actions-rs/toolchain@v1
       with:
         profile: minimal
-        components: rustfmt
+        components: rustfmt, clippy
 
     - name: cargo fmt
       uses: actions-rs/cargo@v1
       with:
         command: fmt
         args: --all -- --check
+
+    - name: cargo clippy
+      uses: actions-rs/cargo@v1
+      env:
+        RUSTFLAGS: -D warnings
+      with:
+        command: clippy
+        args: --workspace --all-targets --all-features
 
   build:
 
