@@ -10,6 +10,7 @@ members = [
     "chapter8",
     "chapter9",
     "chapter10",
+    "chapter10_2_asm_syscall",
     "chapter11",
     "chapter12",
     "chapter13",
