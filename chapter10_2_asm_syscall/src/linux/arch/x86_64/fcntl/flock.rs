@@ -23,6 +23,8 @@ impl FlockOperation {
 pub(crate) fn flock(fd: &Fd, operation: FlockOperation) -> linux::Result<()> {
     // TODO mutex
 
+    println!("fd={:?}", fd);
+
     let ret = syscall::flock(fd.to_i32(), operation.to_c_int());
     if ret == -1 {
         // flock(2) がエラーを返した場合。errnoを返す。
