@@ -19,6 +19,7 @@ pub(crate) fn open_readonly<P: AsRef<Path>>(path: P) -> linux::Result<Fd> {
         // open(2) がエラーを返した場合。errnoを返す。
         Err(linux::Error::from(io::Error::last_os_error()))
     } else {
+        debug_assert!(raw_fd > 0);
         Ok(Fd::new(raw_fd))
     }
 }
