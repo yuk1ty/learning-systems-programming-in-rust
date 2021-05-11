@@ -50,4 +50,4 @@ jobs:
     - name: Run tests
       run: cargo test --verbose
 
-    - run: cd chapter10_2_asm_syscall ; cargo run  # TODO 削除
+    - run: cd chapter10_2_asm_syscall ; cargo +nightly run  # TODO 削除

@@ -1,4 +1,5 @@
 #![feature(asm)]
+#![feature(llvm_asm)]
 
 mod linux;
 

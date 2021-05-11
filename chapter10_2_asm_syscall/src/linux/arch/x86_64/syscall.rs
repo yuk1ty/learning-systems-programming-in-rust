@@ -1,5 +1,5 @@
 pub(crate) fn open(path: *const u8, oflag: i32) -> i32 {
-    syscall2(5, path, oflag)
+    syscall2(5usize, path as usize, oflag as usize) as i32
 }
 
 #[inline(always)]
