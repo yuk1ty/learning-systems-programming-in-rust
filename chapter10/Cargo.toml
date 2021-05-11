@@ -8,3 +8,7 @@ edition = "2018"
 
 [dependencies]
 lib = { path = "../lib" }
+
+[[bin]]
+name = "10_2_asm_syscall"
+path = "src/10_2_asm_syscall/main.rs"
