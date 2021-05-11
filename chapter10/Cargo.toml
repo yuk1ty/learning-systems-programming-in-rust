@@ -8,3 +8,8 @@ edition = "2018"
 
 [dependencies]
 lib = { path = "../lib" }
+nix = "0.20.0"
+
+[[bin]]
+name = "10_2"
+path = "src/10_2/main.rs"
