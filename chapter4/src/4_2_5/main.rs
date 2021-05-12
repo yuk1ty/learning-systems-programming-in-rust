@@ -6,6 +6,7 @@ use std::pin::Pin;
 use std::sync::{Arc, Mutex, Weak};
 use tokio::sync::Notify;
 
+/// contextがdoneになった理由を表す型
 #[derive(Debug, Clone, PartialEq)]
 enum ContextError {
     Canceled,
@@ -19,6 +20,7 @@ impl Display for ContextError {
 
 impl std::error::Error for ContextError {}
 
+/// Context::valueの返り値のエラーを表す型
 #[derive(Debug, Clone)]
 enum ContextValueError {
     NotFound,
@@ -32,19 +34,91 @@ impl Display for ContextValueError {
 
 impl std::error::Error for ContextValueError {}
 
+/// Context::valueで指定するkeyの型
 #[derive(Debug, PartialOrd, PartialEq, Eq, Hash)]
 enum ContextKey {}
 
+/// ContextはAPIの境界を超えて設定データやcancel signal,deadlineを運ぶ
 trait Context: Send + Sync {
+    /// このContextがキャンセルされたときに値が返ってくるようなFutureを返す
+    ///
+    /// # Example
+    ///
+    /// ```
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     println!("start sub()");
+    ///
+    ///     let (ctx, canceler) = ContextWithCancel::new(BackgroundContext::new());
+    ///
+    ///     tokio::spawn(async move {
+    ///         println!("sub() is finished");
+    ///         canceler.cancel();
+    ///     });
+    ///
+    ///     let done = ctx.done().await;
+    ///     assert_eq!(done.unwrap_err(), ContextError::Canceled);
+    ///     println!("all tasks are finished");
+    /// }
+    /// ```
     fn done(&self) -> Pin<Box<dyn Future<Output = Result<(), ContextError>> + '_>>;
+
+    /// Contextが終了した理由を返す
+    ///
+    /// # Example
+    ///
+    /// ```
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     println!("start sub()");
+    ///
+    ///     let (ctx, canceler) = ContextWithCancel::new(BackgroundContext::new());
+    ///
+    ///     assert_eq!(ctx.err(), None);
+    ///
+    ///     tokio::spawn(async move {
+    ///         println!("sub() is finished");
+    ///         canceler.cancel();
+    ///     }).await;
+    ///
+    ///     assert_eq!(ctx.err(), Some(ContextError::Canceled));
+    ///     println!("all tasks are finished");
+    /// }
+    /// ```
     fn err(&self) -> Option<ContextError>;
+
+    /// Contextに紐付けられたvalueを返す
+    /// TODO(higumachan): 細かい活用は後で行う
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     let ctx = ContextWithValue::new(BackgroundContext::new(), ContextKey::from("key", Arc::new("value".to_string()))); // Backgroundはrootとなる空のContext
+    ///
+    ///     assert_eq!(ctx.value(ContextKey::from("key")), None);
+    ///
+    ///     tokio::spawn(async move {
+    ///         println!("sub() is finished");
+    ///         canceler.cancel();
+    ///     }).await;
+    ///
+    ///     assert_eq!(ctx.err(), Some(ContextError::Canceled));
+    ///     println!("all tasks are finished");
+    /// }    
+    /// ```
     fn value(&self, key: &ContextKey) -> Result<Arc<dyn Any>, ContextValueError>;
 }
 
-trait CancelPropagate: Send + Sync {
+/// 子要素に対してCancelを伝播する事ができるContext
+trait CancelPropagate: Send + Sync + HasContextTree {
     fn cancel_propagate(&self, error: ContextError);
 }
 
+/// ContextTreeを持っているContext
 trait HasContextTree {
     fn context_tree(&self) -> Arc<Mutex<ContextTree>>;
 }
@@ -55,19 +129,30 @@ struct ContextTree {
     canceled: Option<ContextError>,
 }
 
+/// Contextのcancelを行うことができるContext
+/// # Example
+///
+/// ```
+///
+/// #[tokio::main]
+/// async fn main() {
+///     println!("start sub()");
+///
+///     let (ctx, canceler: Canceler) = ContextWithCancel::new(BackgroundContext::new()); // Contextと一緒にCancelerが返ってくる
+///
+///     tokio::spawn(async move {
+///         println!("sub() is finished");
+///         canceler.cancel();
+///     });
+///
+///     let done = ctx.done().await;
+///     assert_eq!(done.unwrap_err(), ContextError::Canceled);
+///     println!("all tasks are finished");
+/// }
+/// ```
 struct ContextWithCancel {
     cancel_notify: Notify,
     tree_node: Arc<Mutex<ContextTree>>,
-}
-
-struct Canceler<C: CancelPropagate> {
-    context: Arc<C>,
-}
-
-impl<C: CancelPropagate> Canceler<C> {
-    pub fn cancel(&self) {
-        self.context.cancel_propagate(ContextError::Canceled)
-    }
 }
 
 impl ContextWithCancel {
@@ -99,6 +184,44 @@ impl ContextWithCancel {
         } else {
             Ok(())
         }
+    }
+}
+
+/// Contextのcancelを実際に行うための構造体
+/// # Example
+///
+/// ```
+///
+/// #[tokio::main]
+/// async fn main() {
+///     println!("start sub()");
+///
+///     let (ctx, canceler: Canceler) = ContextWithCancel::new(BackgroundContext::new()); // Contextと一緒にCancelerが返ってくる
+///
+///     tokio::spawn(async move {
+///         println!("sub() is finished");
+///         canceler.cancel();
+///     });
+///
+///     let done = ctx.done().await;
+///     assert_eq!(done.unwrap_err(), ContextError::Canceled);
+///     println!("all tasks are finished");
+/// }
+/// ```
+struct Canceler<C: CancelPropagate> {
+    context: Arc<C>,
+}
+
+impl<C: CancelPropagate> Canceler<C> {
+    /// Contextのcancelを実際に行う関数
+    pub fn cancel(&self) {
+        self.context.cancel_propagate(ContextError::Canceled)
+    }
+}
+
+impl HasContextTree for ContextWithCancel {
+    fn context_tree(&self) -> Arc<Mutex<ContextTree>> {
+        self.tree_node.clone()
     }
 }
 
@@ -137,14 +260,15 @@ impl CancelPropagate for ContextWithCancel {
     }
 }
 
+/// rootのContextになる空のContext
 struct BackgroundContext {
-    body: Arc<Mutex<ContextTree>>,
+    root: Arc<Mutex<ContextTree>>,
 }
 
 impl BackgroundContext {
     fn new() -> Arc<Self> {
         Arc::new(BackgroundContext {
-            body: Arc::new(Mutex::new(ContextTree {
+            root: Arc::new(Mutex::new(ContextTree {
                 parent: None,
                 children: vec![],
                 canceled: None,
@@ -159,7 +283,7 @@ impl Context for BackgroundContext {
     }
 
     fn err(&self) -> Option<ContextError> {
-        todo!()
+        None
     }
 
     fn value(&self, _key: &ContextKey) -> Result<Arc<dyn Any>, ContextValueError> {
@@ -169,7 +293,7 @@ impl Context for BackgroundContext {
 
 impl HasContextTree for BackgroundContext {
     fn context_tree(&self) -> Arc<Mutex<ContextTree>> {
-        self.body.clone()
+        self.root.clone()
     }
 }
 
