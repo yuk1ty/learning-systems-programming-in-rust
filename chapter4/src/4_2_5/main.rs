@@ -242,7 +242,7 @@ impl Context for ContextWithCancel {
             .as_ref()
             .expect("WithCancelは必ず親を持つ")
             .upgrade()
-            .expect("親がすでに開放されています")
+            .expect("親から先に開放されることはない想定")
             .value(key)
     }
 }
