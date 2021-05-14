@@ -19,12 +19,12 @@ fn main() {
         )
         .expect("failed to join multicast group");
 
-    let mut buf = [0u8; 100];
+    println!("Listen to tick server at {}", recv_addr);
 
-    println!("waiting for tick...");
-    socket.recv_from(&mut buf).expect("Didn't receive data");
-    println!("received!");
+    let mut buf = [0u8; 100];
+    let (_, recv_from_addr) = socket.recv_from(&mut buf).expect("failed to receive data");
 
     let tick_s = String::from_utf8(buf.to_vec()).expect("tick data should be written in UTF-8");
-    println!("{}", tick_s);
+    println!("Server: {}", recv_from_addr);
+    println!("Now: {}", tick_s);
 }

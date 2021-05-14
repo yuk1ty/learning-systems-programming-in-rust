@@ -8,6 +8,7 @@ version = "0.1.0"
 
 [dependencies]
 lib = {path = "../lib"}
+chrono = "0.4.19"
 
 [[bin]]
 name = "7_3_1"
