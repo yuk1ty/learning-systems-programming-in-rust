@@ -1,6 +1,10 @@
 //! Timer *server* (*sender* would be better understood).
 
-use std::net::UdpSocket;
+use std::{
+    net::UdpSocket,
+    thread,
+    time::{Duration, Instant, SystemTime},
+};
 
 fn main() {
     let res_addr = "0.0.0.0:0";
@@ -12,5 +16,14 @@ fn main() {
         .connect(req_addr)
         .unwrap_or_else(|e| panic!("failed to connect to {} : {:?}", req_addr, e));
 
-    socket.send(&[0, 1, 2]).expect("failed to send a message");
+    // sends current time per 10 secs.
+    loop {
+        let now = SystemTime::now();
+        let now_s = format!("{:?}", now);
+        println!("Tick: {:?}", &now_s);
+        socket
+            .send(now_s.as_bytes())
+            .expect("failed to send a message");
+        thread::sleep(Duration::from_secs(10));
+    }
 }
