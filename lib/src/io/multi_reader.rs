@@ -28,7 +28,7 @@ pub struct MultiReader {
 impl MultiReader {
     /// Constructs `MultiReader`. `current` is set to the first element that is popped out from `VecDeque`.
     pub fn new(readers: Vec<Box<dyn Read>>) -> Self {
-        let mut deque = VecDeque::from(readers);
+        let mut deque: VecDeque<Box<dyn Read>> = readers.into();
         let current = deque.pop_front();
         Self {
             readers: deque,
