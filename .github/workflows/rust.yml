@@ -43,14 +43,20 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Build (denying warnings)
-        run: RUSTFLAGS='-D warnings' cargo build --all-targets --all-features --verbose
-      - name: Run tests
-        run: cargo test --verbose
+
       - uses: actions/cache@v2
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
             target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-${{ github.job }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-${{ github.job }}-
+            ${{ runner.os }}-cargo-
+
+      - name: Build (denying warnings)
+        run: RUSTFLAGS='-D warnings' cargo build --all-targets --all-features --verbose
+
+      - name: Run tests
+        run: cargo test --verbose
