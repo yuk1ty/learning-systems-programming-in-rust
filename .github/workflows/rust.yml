@@ -44,6 +44,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Install rust-toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          components: rustfmt, clippy
+
       - uses: actions/cache@v2
         with:
           path: |
