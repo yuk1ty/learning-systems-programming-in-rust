@@ -10,6 +10,10 @@ edition = "2018"
 lib = { path = "../lib" }
 
 [[bin]]
+name = "main_9_2_4"
+path = "src/main_9_2_4.rs"
+
+[[bin]]
 name = "9_5_1"
 path = "src/9_5_1/main.rs"
 
