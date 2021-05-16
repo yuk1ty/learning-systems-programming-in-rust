@@ -8,7 +8,7 @@ use tokio::sync::Notify;
 
 /// contextがdoneになった理由を表す型
 #[derive(Debug, Clone, PartialEq)]
-enum ContextError {
+pub enum ContextError {
     Canceled,
 }
 
@@ -22,7 +22,7 @@ impl std::error::Error for ContextError {}
 
 /// Context::valueの返り値のエラーを表す型
 #[derive(Debug, Clone)]
-enum ContextValueError {
+pub enum ContextValueError {
     NotFound,
 }
 
@@ -36,10 +36,10 @@ impl std::error::Error for ContextValueError {}
 
 /// Context::valueで指定するkeyの型
 #[derive(Debug, PartialOrd, PartialEq, Eq, Hash)]
-enum ContextKey {}
+pub enum ContextKey {}
 
 /// ContextはAPIの境界を超えて設定データやcancel signal,deadlineを運ぶ
-trait Context: Send + Sync {
+pub trait Context: Send + Sync {
     /// このContextがキャンセルされたときに値が返ってくるようなFutureを返す
     ///
     /// # Example
@@ -113,192 +113,196 @@ trait Context: Send + Sync {
     fn value(&self, key: &ContextKey) -> Result<Arc<dyn Any>, ContextValueError>;
 }
 
-/// trait Contextの代表的な実装として、ContextをTreeとして以下のようなノードで構成する
-/// - ContextWithCancel
-/// - ContextWithValue(unimplemented)
-/// - ContextWithDeadline(unimplemented)
-/// - BackgroundContext
-///
-/// これらの各ノードは単一の機能を提供する。
-///
-/// 木構造としては以下のような特性を持つ
-/// - cancelは子孫要素に伝播する
-/// - valueは祖先要素に問い合わせる
-trait TreeContext: Context {
-    fn node(&self) -> Arc<Mutex<Node>>;
-}
+mod tree_context {
+    use super::*;
 
-/// 子要素に対してCancelを伝播する事ができるContext
-trait CancelPropagate: Send + Sync + TreeContext {
-    fn cancel_propagate(&self, error: ContextError);
-}
-
-struct Node {
-    children: Vec<Arc<dyn CancelPropagate>>,
-    parent: Option<Weak<dyn Context>>,
-    canceled: Option<ContextError>,
-}
-
-/// Contextのcancelを行う単一機能を持つContext
-///
-/// # Example
-///
-/// ```
-///
-/// #[tokio::main]
-/// async fn main() {
-///     println!("start sub()");
-///
-///     let (ctx, canceler: Canceler) = ContextWithCancel::new(BackgroundContext::new()); // Contextと一緒にCancelerが返ってくる
-///
-///     tokio::spawn(async move {
-///         println!("sub() is finished");
-///         canceler.cancel();
-///     });
-///
-///     let done = ctx.done().await;
-///     assert_eq!(done.unwrap_err(), ContextError::Canceled);
-///     println!("all tasks are finished");
-/// }
-/// ```
-struct ContextWithCancel {
-    cancel_notify: Notify,
-    tree_node: Arc<Mutex<Node>>,
-}
-
-impl ContextWithCancel {
-    pub fn new<C: 'static + TreeContext + Context>(context: Arc<C>) -> (Arc<Self>, Canceler<Self>) {
-        let c: Arc<dyn Context> = context.clone();
-        let this = Arc::new(Self {
-            cancel_notify: Notify::new(),
-            tree_node: Arc::new(Mutex::new(Node {
-                canceled: None,
-                children: vec![],
-                parent: Some(Arc::downgrade(&c)),
-            })),
-        });
-        context.node().lock().unwrap().children.push(this.clone());
-        (this.clone(), Canceler { context: this })
+    /// trait Contextの代表的な実装として、ContextをTreeとして以下のようなノードで構成する
+    /// - ContextWithCancel
+    /// - ContextWithValue(unimplemented)
+    /// - ContextWithDeadline(unimplemented)
+    /// - BackgroundContext
+    ///
+    /// これらの各ノードは単一の機能を提供する。
+    ///
+    /// 木構造としては以下のような特性を持つ
+    /// - cancelは子孫要素に伝播する
+    /// - valueは祖先要素に問い合わせる
+    pub trait TreeContext: Context {
+        fn node(&self) -> Arc<Mutex<Node>>;
     }
 
-    pub async fn done(&self) -> Result<(), ContextError> {
-        let _ = self.cancel_notify.notified().await;
-        if let Some(e) = self.tree_node.lock().unwrap().canceled.clone() {
-            Err(e)
-        } else {
-            Ok(())
+    /// 子要素に対してCancelを伝播する事ができるContext
+    pub trait CancelPropagate: Send + Sync + TreeContext {
+        fn cancel_propagate(&self, error: ContextError);
+    }
+
+    pub struct Node {
+        children: Vec<Arc<dyn CancelPropagate>>,
+        parent: Option<Weak<dyn Context>>,
+        canceled: Option<ContextError>,
+    }
+
+    /// Contextのcancelを行う単一機能を持つContext
+    ///
+    /// # Example
+    ///
+    /// ```
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     println!("start sub()");
+    ///
+    ///     let (ctx, canceler: Canceler) = ContextWithCancel::new(BackgroundContext::new()); // Contextと一緒にCancelerが返ってくる
+    ///
+    ///     tokio::spawn(async move {
+    ///         println!("sub() is finished");
+    ///         canceler.cancel();
+    ///     });
+    ///
+    ///     let done = ctx.done().await;
+    ///     assert_eq!(done.unwrap_err(), ContextError::Canceled);
+    ///     println!("all tasks are finished");
+    /// }
+    /// ```
+    pub struct ContextWithCancel {
+        cancel_notify: Notify,
+        tree_node: Arc<Mutex<Node>>,
+    }
+
+    impl ContextWithCancel {
+        pub fn new<C: 'static + TreeContext>(context: Arc<C>) -> (Arc<Self>, Canceler<Self>) {
+            let c: Arc<dyn Context> = context.clone();
+            let this = Arc::new(Self {
+                cancel_notify: Notify::new(),
+                tree_node: Arc::new(Mutex::new(Node {
+                    canceled: None,
+                    children: vec![],
+                    parent: Some(Arc::downgrade(&c)),
+                })),
+            });
+            context.node().lock().unwrap().children.push(this.clone());
+            (this.clone(), Canceler { context: this })
+        }
+
+        pub async fn done(&self) -> Result<(), ContextError> {
+            let _ = self.cancel_notify.notified().await;
+            if let Some(e) = self.tree_node.lock().unwrap().canceled.clone() {
+                Err(e)
+            } else {
+                Ok(())
+            }
         }
     }
-}
 
-/// Contextのcancelを実際に行うための構造体
-/// # Example
-///
-/// ```
-///
-/// #[tokio::main]
-/// async fn main() {
-///     println!("start sub()");
-///
-///     let (ctx, canceler: Canceler) = ContextWithCancel::new(BackgroundContext::new()); // Contextと一緒にCancelerが返ってくる
-///
-///     tokio::spawn(async move {
-///         println!("sub() is finished");
-///         canceler.cancel();
-///     });
-///
-///     let done = ctx.done().await;
-///     assert_eq!(done.unwrap_err(), ContextError::Canceled);
-///     println!("all tasks are finished");
-/// }
-/// ```
-struct Canceler<C: CancelPropagate> {
-    context: Arc<C>,
-}
-
-impl<C: CancelPropagate> Canceler<C> {
-    /// Contextのcancelを実際に行う関数
-    pub fn cancel(&self) {
-        self.context.cancel_propagate(ContextError::Canceled)
-    }
-}
-
-impl TreeContext for ContextWithCancel {
-    fn node(&self) -> Arc<Mutex<Node>> {
-        self.tree_node.clone()
-    }
-}
-
-impl Context for ContextWithCancel {
-    fn done(&self) -> Pin<Box<dyn Future<Output = Result<(), ContextError>> + '_>> {
-        Box::pin(ContextWithCancel::done(self))
+    /// Contextのcancelを実際に行うための構造体
+    /// # Example
+    ///
+    /// ```
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///     println!("start sub()");
+    ///
+    ///     let (ctx, canceler: Canceler) = ContextWithCancel::new(BackgroundContext::new()); // Contextと一緒にCancelerが返ってくる
+    ///
+    ///     tokio::spawn(async move {
+    ///         println!("sub() is finished");
+    ///         canceler.cancel();
+    ///     });
+    ///
+    ///     let done = ctx.done().await;
+    ///     assert_eq!(done.unwrap_err(), ContextError::Canceled);
+    ///     println!("all tasks are finished");
+    /// }
+    /// ```
+    pub struct Canceler<C: CancelPropagate> {
+        context: Arc<C>,
     }
 
-    fn err(&self) -> Option<ContextError> {
-        self.tree_node.lock().unwrap().canceled.clone()
-    }
-
-    /// ContextWithCancelは値を持たないので親に問い合わせる
-    fn value(&self, key: &ContextKey) -> Result<Arc<dyn Any>, ContextValueError> {
-        self.tree_node
-            .lock()
-            .unwrap()
-            .parent
-            .as_ref()
-            .expect("WithCancelは必ず親を持つ")
-            .upgrade()
-            .expect("親から先に開放されることはない想定")
-            .value(key)
-    }
-}
-
-impl CancelPropagate for ContextWithCancel {
-    fn cancel_propagate(&self, error: ContextError) {
-        let mut body = self.tree_node.lock().unwrap();
-
-        for child in &body.children {
-            child.cancel_propagate(error.clone())
+    impl<C: CancelPropagate> Canceler<C> {
+        /// Contextのcancelを実際に行う関数
+        pub fn cancel(&self) {
+            self.context.cancel_propagate(ContextError::Canceled)
         }
-        body.canceled.replace(error);
-
-        self.cancel_notify.notify_waiters();
-    }
-}
-
-/// rootのContextになる空のContext
-struct BackgroundContext {
-    root: Arc<Mutex<Node>>,
-}
-
-impl BackgroundContext {
-    fn new() -> Arc<Self> {
-        Arc::new(BackgroundContext {
-            root: Arc::new(Mutex::new(Node {
-                parent: None,
-                children: vec![],
-                canceled: None,
-            })),
-        })
-    }
-}
-
-impl Context for BackgroundContext {
-    fn done(&self) -> Pin<Box<dyn Future<Output = Result<(), ContextError>>>> {
-        todo!()
     }
 
-    fn err(&self) -> Option<ContextError> {
-        None
+    impl TreeContext for ContextWithCancel {
+        fn node(&self) -> Arc<Mutex<Node>> {
+            self.tree_node.clone()
+        }
     }
 
-    fn value(&self, _key: &ContextKey) -> Result<Arc<dyn Any>, ContextValueError> {
-        Err(ContextValueError::NotFound)
-    }
-}
+    impl Context for ContextWithCancel {
+        fn done(&self) -> Pin<Box<dyn Future<Output = Result<(), ContextError>> + '_>> {
+            Box::pin(ContextWithCancel::done(self))
+        }
 
-impl TreeContext for BackgroundContext {
-    fn node(&self) -> Arc<Mutex<Node>> {
-        self.root.clone()
+        fn err(&self) -> Option<ContextError> {
+            self.tree_node.lock().unwrap().canceled.clone()
+        }
+
+        /// ContextWithCancelは値を持たないので親に問い合わせる
+        fn value(&self, key: &ContextKey) -> Result<Arc<dyn Any>, ContextValueError> {
+            self.tree_node
+                .lock()
+                .unwrap()
+                .parent
+                .as_ref()
+                .expect("WithCancelは必ず親を持つ")
+                .upgrade()
+                .expect("親から先に開放されることはない想定")
+                .value(key)
+        }
+    }
+
+    impl CancelPropagate for ContextWithCancel {
+        fn cancel_propagate(&self, error: ContextError) {
+            let mut body = self.tree_node.lock().unwrap();
+
+            for child in &body.children {
+                child.cancel_propagate(error.clone())
+            }
+            body.canceled.replace(error);
+
+            self.cancel_notify.notify_waiters();
+        }
+    }
+
+    /// rootのContextになる空のContext
+    pub struct BackgroundContext {
+        root: Arc<Mutex<Node>>,
+    }
+
+    impl BackgroundContext {
+        pub fn new() -> Arc<Self> {
+            Arc::new(BackgroundContext {
+                root: Arc::new(Mutex::new(Node {
+                    parent: None,
+                    children: vec![],
+                    canceled: None,
+                })),
+            })
+        }
+    }
+
+    impl Context for BackgroundContext {
+        fn done(&self) -> Pin<Box<dyn Future<Output = Result<(), ContextError>>>> {
+            todo!()
+        }
+
+        fn err(&self) -> Option<ContextError> {
+            None
+        }
+
+        fn value(&self, _key: &ContextKey) -> Result<Arc<dyn Any>, ContextValueError> {
+            Err(ContextValueError::NotFound)
+        }
+    }
+
+    impl TreeContext for BackgroundContext {
+        fn node(&self) -> Arc<Mutex<Node>> {
+            self.root.clone()
+        }
     }
 }
 
@@ -306,7 +310,8 @@ impl TreeContext for BackgroundContext {
 async fn main() {
     println!("start sub()");
 
-    let (ctx, canceler) = ContextWithCancel::new(BackgroundContext::new()); // Backgroundはrootとなる空のContext
+    let (ctx, canceler) =
+        tree_context::ContextWithCancel::new(tree_context::BackgroundContext::new()); // Backgroundはrootとなる空のContext
 
     tokio::spawn(async move {
         println!("sub() is finished");
