@@ -113,23 +113,34 @@ trait Context: Send + Sync {
     fn value(&self, key: &ContextKey) -> Result<Arc<dyn Any>, ContextValueError>;
 }
 
+/// trait Contextの代表的な実装として、ContextをTreeとして以下のようなノードで構成する
+/// - ContextWithCancel
+/// - ContextWithValue(unimplemented)
+/// - ContextWithDeadline(unimplemented)
+/// - BackgroundContext
+///
+/// これらの各ノードは単一の機能を提供する。
+///
+/// 木構造としては以下のような特性を持つ
+/// - cancelは子孫要素に伝播する
+/// - valueは祖先要素に問い合わせる
+trait TreeContext: Context {
+    fn node(&self) -> Arc<Mutex<Node>>;
+}
+
 /// 子要素に対してCancelを伝播する事ができるContext
-trait CancelPropagate: Send + Sync + Context {
+trait CancelPropagate: Send + Sync + TreeContext {
     fn cancel_propagate(&self, error: ContextError);
 }
 
-/// ContextTreeを持っているContext
-trait HasContextTree {
-    fn context_tree(&self) -> Arc<Mutex<ContextTree>>;
-}
-
-struct ContextTree {
+struct Node {
     children: Vec<Arc<dyn CancelPropagate>>,
     parent: Option<Weak<dyn Context>>,
     canceled: Option<ContextError>,
 }
 
-/// Contextのcancelを行うことができるContext
+/// Contextのcancelを行う単一機能を持つContext
+///
 /// # Example
 ///
 /// ```
@@ -152,28 +163,21 @@ struct ContextTree {
 /// ```
 struct ContextWithCancel {
     cancel_notify: Notify,
-    tree_node: Arc<Mutex<ContextTree>>,
+    tree_node: Arc<Mutex<Node>>,
 }
 
 impl ContextWithCancel {
-    pub fn new<C: 'static + HasContextTree + Context>(
-        context: Arc<C>,
-    ) -> (Arc<Self>, Canceler<Self>) {
+    pub fn new<C: 'static + TreeContext + Context>(context: Arc<C>) -> (Arc<Self>, Canceler<Self>) {
         let c: Arc<dyn Context> = context.clone();
         let this = Arc::new(Self {
             cancel_notify: Notify::new(),
-            tree_node: Arc::new(Mutex::new(ContextTree {
+            tree_node: Arc::new(Mutex::new(Node {
                 canceled: None,
                 children: vec![],
                 parent: Some(Arc::downgrade(&c)),
             })),
         });
-        context
-            .context_tree()
-            .lock()
-            .unwrap()
-            .children
-            .push(this.clone());
+        context.node().lock().unwrap().children.push(this.clone());
         (this.clone(), Canceler { context: this })
     }
 
@@ -219,8 +223,8 @@ impl<C: CancelPropagate> Canceler<C> {
     }
 }
 
-impl HasContextTree for ContextWithCancel {
-    fn context_tree(&self) -> Arc<Mutex<ContextTree>> {
+impl TreeContext for ContextWithCancel {
+    fn node(&self) -> Arc<Mutex<Node>> {
         self.tree_node.clone()
     }
 }
@@ -234,6 +238,7 @@ impl Context for ContextWithCancel {
         self.tree_node.lock().unwrap().canceled.clone()
     }
 
+    /// ContextWithCancelは値を持たないので親に問い合わせる
     fn value(&self, key: &ContextKey) -> Result<Arc<dyn Any>, ContextValueError> {
         self.tree_node
             .lock()
@@ -262,13 +267,13 @@ impl CancelPropagate for ContextWithCancel {
 
 /// rootのContextになる空のContext
 struct BackgroundContext {
-    root: Arc<Mutex<ContextTree>>,
+    root: Arc<Mutex<Node>>,
 }
 
 impl BackgroundContext {
     fn new() -> Arc<Self> {
         Arc::new(BackgroundContext {
-            root: Arc::new(Mutex::new(ContextTree {
+            root: Arc::new(Mutex::new(Node {
                 parent: None,
                 children: vec![],
                 canceled: None,
@@ -291,8 +296,8 @@ impl Context for BackgroundContext {
     }
 }
 
-impl HasContextTree for BackgroundContext {
-    fn context_tree(&self) -> Arc<Mutex<ContextTree>> {
+impl TreeContext for BackgroundContext {
+    fn node(&self) -> Arc<Mutex<Node>> {
         self.root.clone()
     }
 }
