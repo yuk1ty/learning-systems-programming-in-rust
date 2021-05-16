@@ -114,7 +114,7 @@ trait Context: Send + Sync {
 }
 
 /// 子要素に対してCancelを伝播する事ができるContext
-trait CancelPropagate: Send + Sync + HasContextTree {
+trait CancelPropagate: Send + Sync + Context {
     fn cancel_propagate(&self, error: ContextError);
 }
 
