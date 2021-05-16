@@ -35,6 +35,34 @@ impl Display for ContextValueError {
 impl std::error::Error for ContextValueError {}
 
 /// Context::valueで指定するkeyの型
+///
+/// FIXME(higumachan): traitで実装するという案もあるが
+///
+/// ```
+/// trait ContextKey: Eq + Any + Sized {
+///     fn dynamic_equal(&self, other: &dyn Any) -> bool {
+///         if self.type_id() != other.type_id() {
+///             return false
+///         }
+///         
+///        let other = other.downcast_ref::<Self>().expect("type_idで比較しているのでここは必ずSome");
+///    
+///         self == other
+///     }
+/// }
+///
+/// impl<T: Eq + Any + Sized> ContextKey for T {
+/// }
+///
+/// pub trait Context: Send + Sync {
+///     ...
+///     value<K: ContextKey>(key: &K) ->  Result<Arc<dyn Any>, ContextValueError>;
+/// }
+/// ```
+///
+/// のようにtraitを定義した場合に
+/// https://doc.rust-lang.org/error-index.html#method-has-generic-type-parameters
+/// のルールに抵触してしまうためtrait出来ていない。
 #[derive(Debug, PartialOrd, PartialEq, Eq, Hash)]
 pub enum ContextKey {}
 
