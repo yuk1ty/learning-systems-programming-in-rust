@@ -1,7 +1,21 @@
 use std::io::Read;
 
-use super::PngChunks;
+use super::{PngChunks, PNG_FILE_SIGNATURE};
 
+/// Reads PNG file signature and chunks.
+///
+/// # Examples
+///
+/// ```no_run
+/// use lib::image::png::PngAnalyzer;
+/// use std::fs::File;
+///
+/// let png = File::open("/path/to/file.png").unwrap();
+/// let analyzer = PngAnalyzer::new(png);
+/// for chunk in analyzer.chunks() {
+///     println!("{}", chunk);
+/// }
+/// ```
 #[derive(Debug)]
 pub struct PngAnalyzer<R>
 where
@@ -30,10 +44,6 @@ where
     fn read_signature(&mut self) {
         let mut sig = [0u8; 8];
         self.png_reader.read_exact(&mut sig).unwrap();
-        assert_eq!(
-            sig,
-            [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A],
-            "wrong PNG file signature"
-        );
+        assert_eq!(sig, PNG_FILE_SIGNATURE, "wrong PNG file signature");
     }
 }

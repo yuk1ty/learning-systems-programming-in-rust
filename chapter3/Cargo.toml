@@ -60,6 +60,9 @@ path = "src/3_5_2/main.rs"
 name = "3_5_3"
 path = "src/3_5_3/main.rs"
 [[bin]]
+name = "3_5_4"
+path = "src/3_5_4/main.rs"
+[[bin]]
 name = "3_9_1"
 path = "src/3_9_1/main.rs"
 [[bin]]

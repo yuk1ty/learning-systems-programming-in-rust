@@ -7,6 +7,7 @@ use std::{
 
 pub use png_chunk_type::PngChunkType;
 
+/// Represents a chunk of PNG format.
 #[derive(Clone, Eq, PartialEq, Hash, Debug)]
 pub struct PngChunk {
     len: u32,
@@ -16,6 +17,25 @@ pub struct PngChunk {
 }
 
 impl PngChunk {
+    /// Creates "tEXt" chunk
+    pub fn new_text_chunk(text: String) -> Self {
+        let len = text.len() as u32;
+        let typ = PngChunkType::new([b't', b'E', b'X', b't']);
+        let data = text.into_bytes();
+        let crc = {
+            let mut hasher = crc32fast::Hasher::new();
+            hasher.update(&data);
+            let crc32 = hasher.finalize();
+            crc32.to_be_bytes()
+        };
+        Self {
+            len,
+            typ,
+            crc,
+            data,
+        }
+    }
+
     /// # Returns
     ///
     /// None when `r` points to EOF
@@ -40,6 +60,14 @@ impl PngChunk {
                 }))
             }
         }
+    }
+
+    pub(in super::super) fn into_vec(mut self) -> Vec<u8> {
+        let mut bin = self.len.to_be_bytes().to_vec();
+        bin.append(&mut self.typ.as_slice().to_vec());
+        bin.append(&mut self.data);
+        bin.append(&mut self.crc.to_vec());
+        bin
     }
 
     fn read_len<R>(r: &mut R) -> io::Result<u32>
@@ -82,12 +110,17 @@ impl PngChunk {
 
 impl Display for PngChunk {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
+        let mut s = format!(
             "Chunk type: {}, Data len: {}, CRC: {:#X}",
             self.typ,
             self.len,
             u32::from_be_bytes(self.crc)
-        )
+        );
+        if self.typ.is_text() {
+            s = format!(r#"{} - "{}""#, s, String::from_utf8(self.data.clone()).expect(
+                "tEXt chunk can have printable Latin-1 text so conversion into UTF-8 may fail here",
+            ));
+        }
+        write!(f, "{}", s)
     }
 }

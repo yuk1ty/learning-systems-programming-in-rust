@@ -1,8 +1,5 @@
+use lib::image::png::PngAnalyzer;
 use std::{env, fs::File, io};
-
-use png::PngAnalyzer;
-
-mod png;
 
 fn main() -> io::Result<()> {
     let png_path: String = {
