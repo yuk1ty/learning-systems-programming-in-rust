@@ -2,7 +2,7 @@ name: Rust
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
     types:
       - opened
@@ -13,39 +13,66 @@ env:
 
 jobs:
   lint:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Install rust-toolchain
-      uses: actions-rs/toolchain@v1
-      with:
-        profile: minimal
-        components: rustfmt, clippy
+      - name: Install rust-toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          components: rustfmt, clippy
 
-    - name: cargo fmt
-      uses: actions-rs/cargo@v1
-      with:
-        command: fmt
-        args: --all -- --check
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ github.job }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-${{ github.job }}-
+            ${{ runner.os }}-cargo-
 
-    - name: cargo clippy
-      uses: actions-rs/cargo@v1
-      env:
-        RUSTFLAGS: -D warnings
-      with:
-        command: clippy
-        args: --workspace --all-targets --all-features
+      - name: cargo fmt
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check
+
+      - name: cargo clippy
+        uses: actions-rs/cargo@v1
+        env:
+          RUSTFLAGS: -D warnings
+        with:
+          command: clippy
+          args: --workspace --all-targets --all-features
 
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Build (denying warnings)
-      run: RUSTFLAGS='-D warnings' cargo build --all-targets --all-features --verbose
-    - name: Run tests
-      run: cargo test --verbose
+      - uses: actions/checkout@v2
+
+      - name: Install rust-toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ github.job }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-${{ github.job }}-
+            ${{ runner.os }}-cargo-
+
+      - name: Build (denying warnings)
+        run: RUSTFLAGS='-D warnings' cargo build --all-targets --all-features --verbose
+
+      - name: Run tests
+        run: cargo test --verbose
