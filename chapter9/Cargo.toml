@@ -10,6 +10,14 @@ edition = "2018"
 lib = { path = "../lib" }
 
 [[bin]]
+name = "main_9_2_1"
+path = "src/main_9_2_1.rs"
+
+[[bin]]
+name = "main_9_2_3"
+path = "src/main_9_2_3.rs"
+
+[[bin]]
 name = "main_9_2_4"
 path = "src/main_9_2_4.rs"
 
@@ -26,9 +34,6 @@ name = "9_5_3"
 path = "src/9_5_3/main.rs"
 
 [[bin]]
-name = "main_9_2_1"
-path = "src/main_9_2_1.rs"
+name = "9_5_4"
+path = "src/9_5_4/main.rs"
 
-[[bin]]
-name = "main_9_2_3"
-path = "src/main_9_2_3.rs"
