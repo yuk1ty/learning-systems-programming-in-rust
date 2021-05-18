@@ -8,3 +8,8 @@ edition = "2018"
 
 [dependencies]
 lib = { path = "../lib" }
+notify = "4.0.16"
+
+[[bin]]
+name = "10_1"
+path = "src/10_1/main.rs"
