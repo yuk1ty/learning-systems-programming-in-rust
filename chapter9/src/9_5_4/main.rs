@@ -1,29 +1,12 @@
-use std::env;
-use std::path::{Path, PathBuf};
-#[derive(Debug)]
-enum PathError {
-    IoError(std::io::Error),
-    StripPrefixError(std::path::StripPrefixError),
-}
-
-impl From<std::io::Error> for PathError {
-    fn from(error: std::io::Error) -> Self {
-        PathError::IoError(error)
-    }
-}
-
-impl From<std::path::StripPrefixError> for PathError {
-    fn from(error: std::path::StripPrefixError) -> Self {
-        PathError::StripPrefixError(error)
-    }
-}
+use lib::path::*;
+use std::path::Path;
 
 fn main() -> Result<(), PathError> {
+    //存在しないパスを指定した場合、エラーを返す
+
     // パスをそのままクリーンにする
-    let path = PathBuf::from("./chapter9/src/../src/9_5_4/main.rs").canonicalize()?;
-    let current_dir = env::current_dir()?;
-    let clean_path = path.strip_prefix(current_dir)?;
-    println!("{:?}", clean_path);
+    let path = Path::new("./chapter9/src/../src/9_5_4/main.rs").clean()?;
+    println!("{:?}", path);
 
     // パスを絶対パスに整形
     let abs_path = Path::new("./chapter9/src/9_5_4/main.rs").canonicalize()?;
