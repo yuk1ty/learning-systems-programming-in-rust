@@ -1,10 +1,19 @@
 [package]
-name = "chapter7"
-version = "0.1.0"
 authors = ["yuk1ty <yuki.mul.tiplus@gmail.com>"]
 edition = "2018"
+name = "chapter7"
+version = "0.1.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-lib = { path = "../lib" }
+lib = {path = "../lib"}
+chrono = "0.4.19"
+
+[[bin]]
+name = "7_3_1"
+path = "src/7_3_1/main.rs"
+
+[[bin]]
+name = "7_3_2"
+path = "src/7_3_2/main.rs"
