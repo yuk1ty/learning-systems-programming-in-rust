@@ -16,5 +16,5 @@ name = "10_1"
 path = "src/10_1/main.rs"
 
 [[bin]]
-name = "3"
-path = "src/3/main.rs"
+name = "10_3"
+path = "src/10_3/main.rs"
