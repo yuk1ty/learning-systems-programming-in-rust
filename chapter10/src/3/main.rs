@@ -40,7 +40,7 @@ fn main() -> std::io::Result<()> {
     //     *elem = "X".as_bytes()[0];
     // }
 
-    m.flush().unwrap();
+    m.flush()?;
 
     // 読み込んでみる
     let mut buf = Vec::new();
