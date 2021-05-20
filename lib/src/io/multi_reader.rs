@@ -39,6 +39,9 @@ impl MultiReader {
 
 impl Read for MultiReader {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+        // Doesn't move to the next one until the first one is completely read.
+        // If the processing ends in the middle of reading the first one,
+        // it returns the control at that point.
         loop {
             match self.current {
                 Some(ref mut r) => {
