@@ -51,11 +51,11 @@ fn main() -> std::io::Result<()> {
         str::from_utf8(test_data).expect(UTF8_ERROR_MSG)
     );
     println!(
-        "mmap: {}",
+        "mmap:     {}",
         str::from_utf8(&m[..m.len()]).expect(UTF8_ERROR_MSG)
     );
     println!(
-        "file: {}",
+        "file:     {}",
         str::from_utf8(buf.as_ref()).expect(UTF8_ERROR_MSG)
     );
 
