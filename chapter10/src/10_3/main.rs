@@ -14,13 +14,13 @@ fn main() -> std::io::Result<()> {
     let mut test_data = "0123456789ABCDE".as_bytes();
     let mut test_path = temp_dir();
     test_path.push("test_data");
-    let mut file = File::create(test_path.clone())?;
+    let mut file = File::create(&test_path)?;
     file.write_all(&mut test_data)?;
 
     let mut f = OpenOptions::new()
         .read(true)
         .write(true)
-        .open(test_path)
+        .open(&test_path)
         .unwrap();
     f.set_permissions(Permissions::from_mode(0o644))?;
 
