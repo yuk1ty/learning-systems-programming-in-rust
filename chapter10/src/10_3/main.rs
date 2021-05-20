@@ -11,11 +11,11 @@ use memmap2::MmapMut;
 const UTF8_ERROR_MSG: &str = "should\'ve safely converted into Utf-8";
 
 fn main() -> std::io::Result<()> {
-    let mut test_data = "0123456789ABCDE".as_bytes();
+    let test_data = "0123456789ABCDE".as_bytes();
     let mut test_path = temp_dir();
     test_path.push("test_data");
     let mut file = File::create(&test_path)?;
-    file.write_all(&mut test_data)?;
+    file.write_all(&test_data)?;
 
     let mut f = OpenOptions::new()
         .read(true)
@@ -25,7 +25,7 @@ fn main() -> std::io::Result<()> {
     f.set_permissions(Permissions::from_mode(0o644))?;
 
     // mmap-go の代わりに memmap2 というクレートを利用できる。
-    let mut m = unsafe { MmapMut::map_mut(&mut f)? };
+    let mut m = unsafe { MmapMut::map_mut(&f)? };
 
     // Go 言語の場合、下記のように `defer m.Unmap()` が記述されているが、
     // `MmapMut` が中に持つ `MmapInner` に `Drop` トレイトが実装されており、
