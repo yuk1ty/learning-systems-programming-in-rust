@@ -62,15 +62,11 @@ impl ExtendedPath for Path {
 
     fn expand_env(&self) -> Result<PathBuf, PathError> {
         let mut path_buf = PathBuf::new();
-        for path in self.into_iter() {
-            let path_str = path.to_str().unwrap_or("");
-            let caps_opt = RE_VAR.captures(path_str);
-            if let Some(caps) = caps_opt {
-                let expanded_var = env::var(&caps[1])?;
-                path_buf.push(expanded_var);
-                continue;
-            }
-            let caps_opt = RE_VAR_WITHOUT_BRACES.captures(path_str);
+        for path in self.iter() {
+            let path_str = path.to_string_lossy();
+            let caps_opt = RE_VAR
+                .captures(&path_str)
+                .or_else(|| RE_VAR_WITHOUT_BRACES.captures(&path_str));
             if let Some(caps) = caps_opt {
                 let expanded_var = env::var(&caps[1])?;
                 path_buf.push(expanded_var);
