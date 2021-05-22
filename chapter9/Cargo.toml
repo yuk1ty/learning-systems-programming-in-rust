@@ -8,7 +8,7 @@ edition = "2018"
 
 [dependencies]
 lib = { path = "../lib" }
-regex = "1"
+glob = "0.3.0"
 
 [[bin]]
 name = "main_9_2_1"
@@ -41,3 +41,7 @@ path = "src/9_5_4/main.rs"
 [[bin]]
 name = "9_5_5"
 path = "src/9_5_5/main.rs"
+
+[[bin]]
+name = "9_5_6"
+path = "src/9_5_6/main.rs"
