@@ -20,6 +20,8 @@ Usage:
         .iter()
         .map(|str| OsStr::new(str))
         .collect();
+    // ディレクトリのトラバースのためにworkdir crateを利用する
+    // ディレクトリ、拡張子が合わないものについては、フィルタして除外する
     for path in WalkDir::new(root)
         .into_iter()
         .filter_map(Result::ok)

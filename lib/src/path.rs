@@ -42,6 +42,22 @@ static RE_VAR_WITHOUT_BRACES: Lazy<Regex> = Lazy::new(|| Regex::new(r"\$(.+)").u
 
 static TILDE: Lazy<&OsStr> = Lazy::new(|| OsStr::new("~"));
 
+/// extend path::Path
+/// add useful functions to path::Path
+///
+/// # Examples
+///
+/// ```
+/// use lib::path::ExtendedPath
+///
+/// let path = path::Path("./example/../example.txt");
+/// let cleaned_path = path.clean();
+/// println!("cleaned path: {}", cleaned_path);
+///
+/// let path = path::Path("~/example.txt");
+/// let expanded_path = path.expand_env();
+/// println!("expanded env path: {}", expanded_path);
+/// ```
 pub trait ExtendedPath {
     fn clean(&self) -> Result<PathBuf, PathError>;
     fn expand_env(&self) -> Result<PathBuf, PathError>;
