@@ -48,15 +48,19 @@ static TILDE: Lazy<&OsStr> = Lazy::new(|| OsStr::new("~"));
 /// # Examples
 ///
 /// ```
-/// use lib::path::ExtendedPath
+/// use lib::path::{ExtendedPath, PathError};
+/// use std::path::Path;
 ///
-/// let path = path::Path("./example/../example.txt");
-/// let cleaned_path = path.clean();
-/// println!("cleaned path: {}", cleaned_path);
+/// fn main() -> Result<(), PathError> {
+///     let path = Path::new("./src/../Cargo.toml");
+///     let cleaned_path = path.clean()?;
+///     println!("cleaned path: {:?}", cleaned_path);
 ///
-/// let path = path::Path("~/example.txt");
-/// let expanded_path = path.expand_env();
-/// println!("expanded env path: {}", expanded_path);
+///     let path = Path::new("~/.cargo");
+///     let expanded_path = path.expand_env()?;
+///     println!("expanded env path: {:?}", expanded_path);
+///     Ok(())
+/// }
 /// ```
 pub trait ExtendedPath {
     fn clean(&self) -> Result<PathBuf, PathError>;
