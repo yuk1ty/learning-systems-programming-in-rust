@@ -5,16 +5,12 @@ use tokio::time::{self, Duration};
 async fn main() {
     let wait_sec = 5;
     let (_, mut wait) = tokio::sync::oneshot::channel::<()>();
-    let (sleep_tx, mut sleep_rx) = tokio::sync::oneshot::channel();
-
-    tokio::spawn(async move {
-        time::sleep(Duration::from_secs(wait_sec)).await;
-        sleep_tx.send("done").unwrap();
-    });
+    let sleep = time::sleep(Duration::from_secs(wait_sec));
+    tokio::pin!(sleep);
 
     loop {
         tokio::select! {
-            _ = &mut sleep_rx => {
+            _ = &mut sleep => {
                  println!("{} secondes elapsed", wait_sec);
                  break;
             }
