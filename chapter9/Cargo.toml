@@ -8,3 +8,45 @@ edition = "2018"
 
 [dependencies]
 lib = { path = "../lib" }
+glob = "0.3.0"
+walkdir = "2"
+
+[[bin]]
+name = "main_9_2_1"
+path = "src/main_9_2_1.rs"
+
+[[bin]]
+name = "main_9_2_3"
+path = "src/main_9_2_3.rs"
+
+[[bin]]
+name = "main_9_2_4"
+path = "src/main_9_2_4.rs"
+
+[[bin]]
+name = "9_5_1"
+path = "src/9_5_1/main.rs"
+
+[[bin]]
+name = "9_5_2"
+path = "src/9_5_2/main.rs"
+
+[[bin]]
+name = "9_5_3"
+path = "src/9_5_3/main.rs"
+
+[[bin]]
+name = "9_5_4"
+path = "src/9_5_4/main.rs"
+
+[[bin]]
+name = "9_5_5"
+path = "src/9_5_5/main.rs"
+
+[[bin]]
+name = "9_5_6"
+path = "src/9_5_6/main.rs"
+
+[[bin]]
+name = "9_5_7"
+path = "src/9_5_7/main.rs"
