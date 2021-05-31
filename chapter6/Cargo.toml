@@ -8,3 +8,23 @@ edition = "2018"
 
 [dependencies]
 lib = { path = "../lib" }
+
+[[bin]]
+name = "6_5"
+path = "src/6_5/main.rs"
+
+[[bin]]
+name = "6_6"
+path = "src/6_6/main.rs"
+
+[[bin]]
+name = "6_7"
+path = "src/6_7/main.rs"
+
+[[bin]]
+name = "6_8"
+path = "src/6_8/main.rs"
+
+[[bin]]
+name = "6_9"
+path = "src/6_9/main.rs"
