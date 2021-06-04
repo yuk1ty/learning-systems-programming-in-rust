@@ -8,6 +8,8 @@ edition = "2018"
 
 [dependencies]
 lib = { path = "../lib" }
+tokio = "1.6.0"
+http = "0.2.4"
 
 [[bin]]
 name = "6_5"
