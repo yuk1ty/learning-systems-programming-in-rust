@@ -13,3 +13,19 @@ nix = "0.21.0"
 [[bin]]
 name = "11_1_2"
 path = "src/11_1_2/main.rs"
+
+[[bin]]
+name = "11_1_3"
+path = "src/11_1_3/main.rs"
+
+[[bin]]
+name = "11_1_4"
+path = "src/11_1_4/main.rs"
+
+[[bin]]
+name = "11_1_5"
+path = "src/11_1_5/main.rs"
+
+[[bin]]
+name = "11_1_6"
+path = "src/11_1_6/main.rs"
