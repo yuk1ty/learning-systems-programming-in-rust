@@ -9,6 +9,7 @@ edition = "2018"
 [dependencies]
 lib = { path = "../lib" }
 nix = "0.21.0"
+sysinfo = "0.18.1"
 
 [[bin]]
 name = "11_1_2"
@@ -29,3 +30,19 @@ path = "src/11_1_5/main.rs"
 [[bin]]
 name = "11_1_6"
 path = "src/11_1_6/main.rs"
+
+[[bin]]
+name = "11_2_1"
+path = "src/11_2_1/main.rs"
+
+[[bin]]
+name = "11_2_3"
+path = "src/11_2_3/main.rs"
+
+[[bin]]
+name = "11_3"
+path = "src/11_3/main.rs"
+
+[[bin]]
+name = "11_8"
+path = "src/11_8/main.rs"

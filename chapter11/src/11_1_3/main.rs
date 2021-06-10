@@ -1,3 +1,6 @@
+use nix::unistd::{getpgrp, getpid, getsid};
+
 fn main() {
-    println!("11_1_3");
+    let sid = getsid(Some(getpid())).unwrap();
+    println!("グループID: {}, セッションID: {}", getpgrp(), sid);
 }
