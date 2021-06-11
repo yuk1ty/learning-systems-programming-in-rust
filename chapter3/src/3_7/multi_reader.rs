@@ -1,0 +1,14 @@
+use std::io::{copy, stdout};
+
+use lib::io::MultiReader;
+
+fn main() -> std::io::Result<()> {
+    let header = "---- HEADER ----\n".as_bytes();
+    let content = "Example of MultiReader\n".as_bytes();
+    let footer = "---- FOOTER ----\n".as_bytes();
+    let mut multi_reader =
+        MultiReader::new(vec![Box::new(header), Box::new(content), Box::new(footer)]);
+    copy(&mut multi_reader, &mut stdout())?;
+
+    Ok(())
+}

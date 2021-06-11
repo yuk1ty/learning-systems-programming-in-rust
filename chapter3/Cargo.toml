@@ -86,3 +86,9 @@ path = "src/3_6_3/main.rs"
 [[bin]]
 name = "3_6_2"
 path = "src/3_6_2/main.rs"
+[[bin]]
+name = "3_7_multi"
+path = "src/3_7/multi_reader.rs"
+[[bin]]
+name = "3_7_tee"
+path = "src/3_7/tee_reader.rs"
