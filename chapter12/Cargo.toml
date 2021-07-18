@@ -8,3 +8,11 @@ edition = "2018"
 
 [dependencies]
 lib = { path = "../lib" }
+tokio = { version = "1.8.1", features = ["full"] }
+signal-hook = "0.3.9"
+signal-hook-tokio = { version = "0.3.0", features = ["futures-v0_3"] }
+futures = "0.3.15"
+
+[[bin]]
+name = "12_4"
+path = "src/12_4/main.rs"
